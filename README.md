@@ -36,13 +36,13 @@ package main
 
 import (
 	"fmt"
-    "os"
+	"os"
 
-    "gitlab.com/scabala/zelligo"
+	"gitlab.com/scabala/zelligo"
 
 
 type MyPlugin struct {
-    message string
+	message string
 }
 
 
@@ -53,7 +53,7 @@ func (p *MyPlugin) Load() {
 }
 
 func (p *MyPlugin) Update(event map[string]string) bool {
-    fmt.Fprintf(os.Stderr, "log message: %v", event)
+	fmt.Fprintf(os.Stderr, "log message: %v", event)
 	return true
 }
 
