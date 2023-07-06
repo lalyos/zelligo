@@ -2,6 +2,8 @@
 
 [zellij](https://zellij.dev/) is modern terminal multiplexer written in Rust with WebAssembly plugin system. It has native support for creating plugins in Rust. This project strives to make creating Zellij plugins in Go as easy as in Rust.
 
+WARNING! - this project is on very early stage of development! Expect bugs and breaking changes!
+
 ## What is zelligo
 
 [zelligo]() is a Go library that exposes nice API for writing Zellij plugins. It wraps WebAssembly internals and data structures encoding and decoding behind `ZellijPlugin` interface.
