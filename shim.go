@@ -1,4 +1,4 @@
-package gitlab.com/scabala/zelligo
+package zelligo
 
 import (
 	"bufio"

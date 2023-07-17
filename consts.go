@@ -1,4 +1,4 @@
-package gitlab.com/scabala/zelligo
+package zelligo
 
 type InputMode string
 
