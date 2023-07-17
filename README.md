@@ -41,7 +41,7 @@ import (
 	"os"
 
 	"gitlab.com/scabala/zelligo"
-
+)
 
 type MyPlugin struct {
 	message string
