@@ -6,7 +6,7 @@ import (
 
 type ZellijPlugin interface {
 	Load()
-	Update(event map[string]string) bool
+	Update(event map[string]interface{}) bool
 	Render(rows uint32, cols uint32)
 }
 
@@ -33,7 +33,7 @@ func load() {
 func update() bool {
 	defer reportPanic()
 
-	event := make(map[string]string)
+	event := make(map[string]interface{})
 	err := objectFromStdin(&event)
 	if err != nil {
 		panic(err)

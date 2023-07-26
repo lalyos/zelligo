@@ -54,7 +54,7 @@ func (p *MyPlugin) Load() {
 	})
 }
 
-func (p *MyPlugin) Update(event map[string]string) bool {
+func (p *MyPlugin) Update(event map[string]interface{}) bool {
 	fmt.Fprintf(os.Stderr, "log message: %v", event)
 	return true
 }
