@@ -2,8 +2,6 @@ package zelligo
 
 import (
 	"fmt"
-	"bufio"
-	"os"
 )
 
 type ZellijPlugin interface {
@@ -36,7 +34,7 @@ func update() bool {
 	defer reportPanic()
 
 	event := make(map[string]string)
-	err := objectfromstdin(&event)
+	err := objectFromStdin(&event)
 	if err != nil {
 		panic(err)
 	}
@@ -53,4 +51,3 @@ func render(x, y uint32) {
 
 // main is required for the `wasi` target, even if it isn't used.
 func main() {}
-

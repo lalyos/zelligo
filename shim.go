@@ -2,10 +2,10 @@ package zelligo
 
 import (
 	"bufio"
-	"os"
 	"encoding/json"
-	"runtime/debug"
 	"fmt"
+	"os"
+	"runtime/debug"
 )
 
 func objectToStdout(obj interface{}) error {
@@ -336,8 +336,8 @@ func reportPanic() {
 	}
 }
 
-
-//TODO
+// TODO
+//
 //go:wasm-module zellij
 //export host_resize_focused_pane
 func hostResizeFocusedPane()
@@ -381,7 +381,8 @@ func FocusPreviousPane() {
 	hostFocusPreviousPane()
 }
 
-//TODO
+// TODO
+//
 //go:wasm-module zellij
 //export host_move_focus
 func hostMoveFocus()
@@ -395,7 +396,8 @@ func MoveFocus(direction map[string]string) error {
 	return nil
 }
 
-//TODO
+// TODO
+//
 //go:wasm-module zellij
 //export host_move_focus_or_tab
 func hostMoveFocusOrTab()
@@ -467,7 +469,8 @@ func MovePane() {
 	hostMovePane()
 }
 
-//TODO
+// TODO
+//
 //go:wasm-module zellij
 //export host_move_pane_with_direction
 func hostMovePaneWithDirection()
@@ -785,4 +788,3 @@ func PostMessageToPlugin(message string, payload string) error {
 	hostPostMessageToPlugin()
 	return nil
 }
-
