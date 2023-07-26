@@ -66,7 +66,12 @@ func (p *MyPlugin) Render(cols uint32, rows uint32) {
 func init() {
 	zelligo.RegisterPlugin(&MyPlugin{message: "Hello from Go!"})
 }
+
+func main() {}  // this is very important
 ```
+
+Please keep in mind that you **have to** define main function. It should be empty - 
+becasue it is not used - but must be defined to properly compile to WASI.
 
 ## Improvements (MRs welcomed!)
 

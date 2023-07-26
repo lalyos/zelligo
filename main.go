@@ -48,6 +48,3 @@ func render(x, y uint32) {
 	defer reportPanic()
 	STATE.Render(x, y)
 }
-
-// main is required for the `wasi` target, even if it isn't used.
-func main() {}
