@@ -48,7 +48,8 @@ type MyPlugin struct {
 }
 
 
-func (p *MyPlugin) Load() {
+func (p *MyPlugin) Load(configuration map[string]string) {
+	fmt.Fprintf(os.Stderr, "configuration for plugin is: %v", configuration)
 	zelligo.Subscribe([]zelligo.EventType{
 		zelligo.EventTypeKey,
 	})

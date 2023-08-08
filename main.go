@@ -5,7 +5,7 @@ import (
 )
 
 type ZellijPlugin interface {
-	Load()
+	Load(configuration map[string]string)
 	Update(event map[string]interface{}) bool
 	Render(rows uint32, cols uint32)
 }
@@ -26,7 +26,12 @@ func pluginVersion() {
 //export load
 func load() {
 	defer reportPanic()
-	STATE.Load()
+	configuration := make(map[string]string)
+	err := objectFromStdin(&configuration)
+	if err != nil {
+		panic(err)
+	}
+	STATE.Load(configuration)
 }
 
 //export update
