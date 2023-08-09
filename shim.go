@@ -38,8 +38,7 @@ func objectFromStdin(obj interface{}) error {
 	return nil
 }
 
-//go:wasm-module zellij
-//export host_subscribe
+//go:wasmimport zellij host_subscribe
 func hostSubscribe()
 
 func Subscribe(eventTypes []EventType) error {
@@ -51,8 +50,7 @@ func Subscribe(eventTypes []EventType) error {
 	return nil
 }
 
-//go:wasm-module zellij
-//export host_unsubscribe
+//go:wasmimport zellij host_unsubscribe
 func hostUnsubscribe()
 
 func Unsubscribe(eventTypes []EventType) error {
@@ -64,8 +62,7 @@ func Unsubscribe(eventTypes []EventType) error {
 	return nil
 }
 
-//go:wasm-module zellij
-//export set_selectable
+//go:wasmimport zellij set_selectable
 func hostSetSelectable(selectable int32)
 
 func SetSelectable(selectable bool) {
@@ -78,8 +75,7 @@ func SetSelectable(selectable bool) {
 	hostSetSelectable(intSelectable)
 }
 
-//go:wasm-module zellij
-//export host_get_plugin_ids
+//go:wasmimport zellij host_get_plugin_ids
 func hostGetPluginIds()
 
 func GetPluginIds() string {
@@ -90,8 +86,7 @@ func GetPluginIds() string {
 	return plugin_ids
 }
 
-//go:wasm-module zellij
-//export host_get_zellij_version
+//go:wasmimport zellij host_get_zellij_version
 func hostGetZellijVersion()
 
 func GetZellijVersion() (string, error) {
@@ -105,8 +100,7 @@ func GetZellijVersion() (string, error) {
 	return zellijVersion, nil
 }
 
-//go:wasm-module zellij
-//export host_open_file
+//go:wasmimport zellij host_open_file
 func hostOpenFile()
 
 func OpenFile(filepath string) error {
@@ -118,8 +112,7 @@ func OpenFile(filepath string) error {
 	return nil
 }
 
-//go:wasm-module zellij
-//export host_open_file_floating
+//go:wasmimport zellij host_open_file_floating
 func hostOpenFileFloating()
 
 func OpenFileFloating(filepath string) error {
@@ -132,8 +125,7 @@ func OpenFileFloating(filepath string) error {
 	return nil
 }
 
-//go:wasm-module zellij
-//export host_open_file_with_line
+//go:wasmimport zellij host_open_file_with_line
 func hostOpenFileWithLine()
 
 func OpenFileWithLine(filepath string, line uint32) error {
@@ -147,8 +139,7 @@ func OpenFileWithLine(filepath string, line uint32) error {
 	return nil
 }
 
-//go:wasm-module zellij
-//export host_open_file_with_line_floating
+//go:wasmimport zellij host_open_file_with_line_floating
 func hostOpenFileWithLineFloating()
 
 func OpenFileWithLineFloating(filepath string, line uint32) error {
@@ -162,8 +153,7 @@ func OpenFileWithLineFloating(filepath string, line uint32) error {
 	return nil
 }
 
-//go:wasm-module zellij
-//export host_open_terminal
+//go:wasmimport zellij host_open_terminal
 func hostOpenTerminal()
 
 func OpenTerminal(filepath string) error {
@@ -176,8 +166,7 @@ func OpenTerminal(filepath string) error {
 	return nil
 }
 
-//go:wasm-module zellij
-//export host_open_terminal_floating
+//go:wasmimport zellij host_open_terminal_floating
 func hostOpenTerminalFloating()
 
 func OpenTerminalFloating(filepath string) error {
@@ -190,7 +179,7 @@ func OpenTerminalFloating(filepath string) error {
 	return nil
 }
 
-//export host_open_command_pane
+//go:wasmimport zellij host_open_command_pane
 func hostOpenCommandPane()
 
 func OpenCommandPane(command string, args []string) error {
@@ -203,7 +192,7 @@ func OpenCommandPane(command string, args []string) error {
 	return nil
 }
 
-//export host_open_command_pane_floating
+//go:wasmimport zellij host_open_command_pane_floating
 func hostOpenCommandPaneFloating()
 
 func OpenCommandPaneFloating(command string, args []string) error {
@@ -216,8 +205,7 @@ func OpenCommandPaneFloating(command string, args []string) error {
 	return nil
 }
 
-//go:wasm-module zellij
-//export host_switch_to_tab
+//go:wasmimport zellij host_switch_to_tab
 func hostSwitchToTab(tab_idx uint32)
 
 func SwitchToTab(tab_idx uint32) error {
@@ -225,8 +213,7 @@ func SwitchToTab(tab_idx uint32) error {
 	return nil
 }
 
-//go:wasm-module zellij
-//export host_set_timeout
+//go:wasmimport zellij host_set_timeout
 func hostSetTimeout(secs float64)
 
 func SetTimeout(secs float64) error {
@@ -234,8 +221,7 @@ func SetTimeout(secs float64) error {
 	return nil
 }
 
-//go:wasm-module zellij
-//export host_exec_cmd
+//go:wasmimport zellij host_exec_cmd
 func hostExecCmd()
 
 func ExecCmd(cmd []string) error {
@@ -247,16 +233,14 @@ func ExecCmd(cmd []string) error {
 	return nil
 }
 
-//go:wasm-module zellij
-//export host_hide_self
+//go:wasmimport zellij host_hide_self
 func hostHideSelf()
 
 func HideSelf() {
 	hostHideSelf()
 }
 
-//go:wasm-module zellij
-//export host_show_self
+//go:wasmimport zellij host_show_self
 func hostShowSelf(shouldFloatIfHidden uint32)
 
 func ShowSelf(shouldFloatIfHidden bool) {
@@ -269,8 +253,7 @@ func ShowSelf(shouldFloatIfHidden bool) {
 	hostShowSelf(flag)
 }
 
-//go:wasm-module zellij
-//export host_switch_to_input_mode
+//go:wasmimport zellij host_switch_to_input_mode
 func hostSwitchToInputMode()
 
 func SwitchToInputMode(inputMode InputMode) error {
@@ -282,8 +265,7 @@ func SwitchToInputMode(inputMode InputMode) error {
 	return nil
 }
 
-//go:wasm-module zellij
-//export host_new_tabs_with_layout
+//go:wasmimport zellij host_new_tabs_with_layout
 func hostNewTabsWithLayout()
 
 func NewTabsWithLayout(layout string) error {
@@ -295,32 +277,28 @@ func NewTabsWithLayout(layout string) error {
 	return nil
 }
 
-//go:wasm-module zellij
-//export host_new_tab
+//go:wasmimport zellij host_new_tab
 func hostNewTab()
 
 func NewTab() {
 	hostNewTab()
 }
 
-//go:wasm-module zellij
-//export host_go_to_next_tab
+//go:wasmimport zellij host_go_to_next_tab
 func hostGoToNextTab()
 
 func GoToNextTab() {
 	hostGoToNextTab()
 }
 
-//go:wasm-module zellij
-//export host_go_to_previous_tab
+//go:wasmimport zellij host_go_to_previous_tab
 func hostGoToPreviousTab()
 
 func GoToPreviousTab() {
 	hostGoToPreviousTab()
 }
 
-//go:wasm-module zellij
-//export host_report_panic
+//go:wasmimport zellij host_report_panic
 func hostReportPanic()
 
 func reportPanic() {
@@ -338,8 +316,7 @@ func reportPanic() {
 
 // TODO
 //
-//go:wasm-module zellij
-//export host_resize_focused_pane
+//go:wasmimport zellij host_resize_focused_pane
 func hostResizeFocusedPane()
 
 func ResizeFocusedPane(resize map[string]string) error {
@@ -351,8 +328,7 @@ func ResizeFocusedPane(resize map[string]string) error {
 	return nil
 }
 
-//go:wasm-module zellij
-//export host_resize_focused_pane_with_direction
+//go:wasmimport zellij host_resize_focused_pane_with_direction
 func hostResizeFocusedPaneWithDirection()
 
 func ResizeFocusedPaneWithDirection(resize map[string]string, direction map[string]string) error {
@@ -365,16 +341,14 @@ func ResizeFocusedPaneWithDirection(resize map[string]string, direction map[stri
 	return nil
 }
 
-//go:wasm-module zellij
-//export host_focus_next_pan
+//go:wasmimport zellij host_focus_next_pan
 func hostFocusNextPane()
 
 func FocusNextPane() {
 	hostFocusNextPane()
 }
 
-//go:wasm-module zellij
-//export host_focus_previous_pan
+//go:wasmimport zellij host_focus_previous_pan
 func hostFocusPreviousPane()
 
 func FocusPreviousPane() {
@@ -383,8 +357,7 @@ func FocusPreviousPane() {
 
 // TODO
 //
-//go:wasm-module zellij
-//export host_move_focus
+//go:wasmimport zellij host_move_focus
 func hostMoveFocus()
 
 func MoveFocus(direction map[string]string) error {
@@ -398,8 +371,7 @@ func MoveFocus(direction map[string]string) error {
 
 // TODO
 //
-//go:wasm-module zellij
-//export host_move_focus_or_tab
+//go:wasmimport zellij host_move_focus_or_tab
 func hostMoveFocusOrTab()
 
 func MoveFocusOrTab(direction map[string]string) error {
@@ -411,24 +383,21 @@ func MoveFocusOrTab(direction map[string]string) error {
 	return nil
 }
 
-//go:wasm-module zellij
-//export host_detach
+//go:wasmimport zellij host_detach
 func hostDetach()
 
 func Detach() {
 	hostDetach()
 }
 
-//go:wasm-module zellij
-//export host_edit_scrollback
+//go:wasmimport zellij host_edit_scrollback
 func hostEditScrollback()
 
 func EditScrollback() {
 	hostEditScrollback()
 }
 
-//go:wasm-module zellij
-//export host_write
+//go:wasmimport zellij host_write
 func hostWrite()
 
 func Write(bytes []byte) error {
@@ -440,8 +409,7 @@ func Write(bytes []byte) error {
 	return nil
 }
 
-//go:wasm-module zellij
-//export host_write_chars
+//go:wasmimport zellij host_write_chars
 func hostWriteChars()
 
 func WriteChars(chars string) error {
@@ -453,16 +421,14 @@ func WriteChars(chars string) error {
 	return nil
 }
 
-//go:wasm-module zellij
-//export host_toggle_tab
+//go:wasmimport zellij host_toggle_tab
 func hostToggleTab()
 
 func ToggleTab() {
 	hostToggleTab()
 }
 
-//go:wasm-module zellij
-//export host_move_pane
+//go:wasmimport zellij host_move_pane
 func hostMovePane()
 
 func MovePane() {
@@ -471,8 +437,7 @@ func MovePane() {
 
 // TODO
 //
-//go:wasm-module zellij
-//export host_move_pane_with_direction
+//go:wasmimport zellij host_move_pane_with_direction
 func hostMovePaneWithDirection()
 
 func MovePaneWithDirection(direction map[string]string) error {
@@ -484,152 +449,133 @@ func MovePaneWithDirection(direction map[string]string) error {
 	return nil
 }
 
-//go:wasm-module zellij
-//export host_clear_screen
+//go:wasmimport zellij host_clear_screen
 func hostClearScreen()
 
 func ClearScreen() {
 	hostClearScreen()
 }
 
-//go:wasm-module zellij
-//export host_scroll_up
+//go:wasmimport zellij host_scroll_up
 func hostScrollUp()
 
 func ScrollUp() {
 	hostScrollUp()
 }
 
-//go:wasm-module zellij
-//export host_scroll_down
+//go:wasmimport zellij host_scroll_down
 func hostScrollDown()
 
 func ScrollDown() {
 	hostScrollDown()
 }
 
-//go:wasm-module zellij
-//export host_scroll_to_top
+//go:wasmimport zellij host_scroll_to_top
 func hostScrollToTop()
 
 func ScrollToTop() {
 	hostScrollToTop()
 }
 
-//go:wasm-module zellij
-//export host_scroll_to_bottom
+//go:wasmimport zellij host_scroll_to_bottom
 func hostScrollToBottom()
 
 func ScrollToBottom() {
 	hostScrollToBottom()
 }
 
-//go:wasm-module zellij
-//export host_page_scroll_up
+//go:wasmimport zellij host_page_scroll_up
 func hostPageScrollUp()
 
 func PageScrollUp() {
 	hostPageScrollUp()
 }
 
-//go:wasm-module zellij
-//export host_page_scroll_down
+//go:wasmimport zellij host_page_scroll_down
 func hostPageScrollDown()
 
 func PageScrollDown() {
 	hostPageScrollDown()
 }
 
-//go:wasm-module zellij
-//export host_toggle_focus_fullscreen
+//go:wasmimport zellij host_toggle_focus_fullscreen
 func hostToggleFocusFullscreen()
 
 func ToggleFocusFullscreen() {
 	hostToggleFocusFullscreen()
 }
 
-//go:wasm-module zellij
-//export host_toggle_pane_frames
+//go:wasmimport zellij host_toggle_pane_frames
 func hostTogglePaneFrames()
 
 func TogglePaneFrames() {
 	hostTogglePaneFrames()
 }
 
-//go:wasm-module zellij
-//export host_toggle_pane_embed_or_eject
+//go:wasmimport zellij host_toggle_pane_embed_or_eject
 func hostTogglePaneEmbedOrEject()
 
 func TogglePaneEmbedOrEject() {
 	hostTogglePaneEmbedOrEject()
 }
 
-//go:wasm-module zellij
-//export host_undo_rename_pane
+//go:wasmimport zellij host_undo_rename_pane
 func hostUndoRenamePane()
 
 func UndoRenamePane() {
 	hostUndoRenamePane()
 }
 
-//go:wasm-module zellij
-//export host_close_focus
+//go:wasmimport zellij host_close_focus
 func hostCloseFocus()
 
 func CloseFocus() {
 	hostCloseFocus()
 }
 
-//go:wasm-module zellij
-//export host_toggle_active_tab_sync
+//go:wasmimport zellij host_toggle_active_tab_sync
 func hostToggleActiveTabSync()
 
 func ToggleActiveTabSync() {
 	hostToggleActiveTabSync()
 }
 
-//go:wasm-module zellij
-//export host_close_focused_tab
+//go:wasmimport zellij host_close_focused_tab
 func hostCloseFocusedTab()
 
 func CloseFocusedTab() {
 	hostCloseFocusedTab()
 }
 
-//go:wasm-module zellij
-//export host_undo_rename_tab
+//go:wasmimport zellij host_undo_rename_tab
 func hostUndoRenameTab()
 
 func UndoRenameTab() {
 	hostUndoRenameTab()
 }
 
-//go:wasm-module zellij
-//export host_quit_zellij
+//go:wasmimport zellij host_quit_zellij
 func hostQuitZellij()
 
 func QuitZellij() {
 	hostQuitZellij()
 }
 
-//go:wasm-module zellij
-//export host_previous_swap_layout
+//go:wasmimport zellij host_previous_swap_layout
 func hostPreviousSwapLayout()
 
 func PreviousSwapLayout() {
 	hostPreviousSwapLayout()
 }
 
-//go:wasm-module zellij
-//export host_next_swap_layout
+//go:wasmimport zellij host_next_swap_layout
 func hostNextSwapLayout()
 
 func NextSwapLayout() {
 	hostNextSwapLayout()
 }
 
-//go:wasm-module zellij
-//export host_go_to_tab_name
+//go:wasmimport zellij host_go_to_tab_name
 func hostGoToTabName()
 
 func GoToTabName(tabName string) error {
@@ -641,8 +587,7 @@ func GoToTabName(tabName string) error {
 	return nil
 }
 
-//go:wasm-module zellij
-//export host_focus_or_create_tab
+//go:wasmimport zellij host_focus_or_create_tab
 func hostFocusOrCreateTab()
 
 func FocusOrCreateTab(tabName string) error {
@@ -654,16 +599,14 @@ func FocusOrCreateTab(tabName string) error {
 	return nil
 }
 
-//go:wasm-module zellij
-//export host_go_to_tab
+//go:wasmimport zellij host_go_to_tab
 func hostGoToTab(tabIndex uint32)
 
 func GoToTab(tabIndex uint32) {
 	hostGoToTab(tabIndex)
 }
 
-//go:wasm-module zellij
-//export host_start_or_reload_plugin
+//go:wasmimport zellij host_start_or_reload_plugin
 func hostStartOrReloadPlugin()
 
 func StartOrReloadPlugin(url string) error {
@@ -675,24 +618,21 @@ func StartOrReloadPlugin(url string) error {
 	return nil
 }
 
-//go:wasm-module zellij
-//export host_close_terminal_pane
+//go:wasmimport zellij host_close_terminal_pane
 func hostCloseTerminalPane(terminalPaneId uint32)
 
 func CloseTerminalPane(terminalPaneId uint32) {
 	hostCloseTerminalPane(terminalPaneId)
 }
 
-//go:wasm-module zellij
-//export host_close_terminal_pane
+//go:wasmimport zellij host_close_terminal_pane
 func hostClosePluginPane(pluginPaneId uint32)
 
 func ClosePluginPane(pluginPaneId uint32) {
 	hostClosePluginPane(pluginPaneId)
 }
 
-//go:wasm-module zellij
-//export host_focus_terminal_pane
+//go:wasmimport zellij host_focus_terminal_pane
 func hostFocusTerminalPane(terminalPaneId int32, shouldFloatIfHidden int32)
 
 func FocusTerminalPane(terminalPaneId int32, shouldFloatIfHidden bool) {
@@ -705,8 +645,7 @@ func FocusTerminalPane(terminalPaneId int32, shouldFloatIfHidden bool) {
 	hostFocusTerminalPane(terminalPaneId, shouldFloat)
 }
 
-//go:wasm-module zellij
-//export host_focus_plugin_pane
+//go:wasmimport zellij host_focus_plugin_pane
 func hostFocusPluginPane(pluginPaneId int32, shouldFloatIfHidden int32)
 
 func CloseFocusPane(pluginPaneId int32, shouldFloatIfHidden bool) {
@@ -719,8 +658,7 @@ func CloseFocusPane(pluginPaneId int32, shouldFloatIfHidden bool) {
 	hostFocusPluginPane(pluginPaneId, shouldFloat)
 }
 
-//go:wasm-module zellij
-//export host_rename_terminal_pane
+//go:wasmimport zellij host_rename_terminal_pane
 func hostRenameTerminalPane()
 
 func RenameTerminalPane(terminalPaneId uint32, newName string) error {
@@ -733,8 +671,7 @@ func RenameTerminalPane(terminalPaneId uint32, newName string) error {
 	return nil
 }
 
-//go:wasm-module zellij
-//export host_rename_plugin_pane
+//go:wasmimport zellij host_rename_plugin_pane
 func hostRenamePluginPane()
 
 func RenamePluginPane(pluginPaneId uint32, newName string) error {
@@ -747,8 +684,7 @@ func RenamePluginPane(pluginPaneId uint32, newName string) error {
 	return nil
 }
 
-//go:wasm-module zellij
-//export host_rename_tab
+//go:wasmimport zellij host_rename_tab
 func hostRenameTab()
 
 func RenameTab(tabPosition uint32, newName string) error {
@@ -761,8 +697,7 @@ func RenameTab(tabPosition uint32, newName string) error {
 	return nil
 }
 
-//go:wasm-module zellij
-//export host_post_message_to
+//go:wasmimport zellij host_post_message_to
 func hostPostMessageTo()
 
 func PostMessageTo(workerName string, message string, payload string) error {
@@ -775,8 +710,7 @@ func PostMessageTo(workerName string, message string, payload string) error {
 	return nil
 }
 
-//go:wasm-module zellij
-//export host_post_message_to_plugin
+//go:wasmimport zellij host_post_message_to_plugin
 func hostPostMessageToPlugin()
 
 func PostMessageToPlugin(message string, payload string) error {

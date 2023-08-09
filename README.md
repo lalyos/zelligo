@@ -17,7 +17,7 @@ As is advised by Go, [you should handle errors](https://go.dev/doc/tutorial/hand
 
 ## Building
 
-Current Go version (1.20) does not support building WASI binaries and only Go compiler that supports building WASI binaries is [tinygo](https://tinygo.org/).
+Main target for compiling Go to WASI is [tinygo](https://tinygo.org/) and it is the compiler used with this project.
 
 In order to build plugin, use following command:
 
@@ -26,6 +26,14 @@ tinygo build -o plugin.wasm -target=wasi
 ```
 
 It will produce plugin `plugin.wasm` in current directory, using Go sources from current directory.
+
+One could use also currently (1.21) experimental port of Go to WASI preview 1 by running:
+
+```bash
+env GOOS=wasip1 GOARCH=wasm go build -o plugin.wasm main.go
+```
+
+However, it is young and experimental so expect bugs.
 
 ## Version support
 
