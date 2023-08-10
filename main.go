@@ -6,7 +6,7 @@ import (
 
 type ZellijPlugin interface {
 	Load(configuration map[string]string)
-	Update(event map[string]interface{}) bool
+	Update(event Event) bool
 	Render(rows uint32, cols uint32)
 }
 
@@ -26,11 +26,20 @@ func pluginVersion() {
 //export load
 func load() {
 	defer reportPanic()
-	configuration := make(map[string]string)
-	err := objectFromStdin(&configuration)
+
+	pluginConfiguration := PluginConfiguration{}
+	err := objectFromStdin(&pluginConfiguration)
 	if err != nil {
 		panic(err)
 	}
+
+	configuration := make(map[string]string)
+	for _, g := range pluginConfiguration.NameAndValue {
+		if g != nil {
+			configuration[g.Name] = g.Value
+		}
+	}
+
 	STATE.Load(configuration)
 }
 
@@ -38,7 +47,7 @@ func load() {
 func update() bool {
 	defer reportPanic()
 
-	event := make(map[string]interface{})
+	event := Event{}
 	err := objectFromStdin(&event)
 	if err != nil {
 		panic(err)

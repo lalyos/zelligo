@@ -82,8 +82,14 @@ func main() {}  // this is very important
 Please keep in mind that you **have to** define main function. It should be empty - 
 becasue it is not used - but must be defined to properly compile to WASI.
 
+## Development
+
+In order to develop `zelligo`, you need following:
+
+- Go version 1.21 or up/tinygo
+- [protoc](https://github.com/protocolbuffers/protobuf#protobuf-compiler-installation)
+
 ## Improvements (MRs welcomed!)
 
  - Workers support
- - Custom structures instead of `map[string]string`
 

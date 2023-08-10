@@ -2,14 +2,17 @@ package zelligo
 
 import (
 	"bufio"
-	"encoding/json"
 	"fmt"
 	"os"
 	"runtime/debug"
+	"strings"
+
+	"google.golang.org/protobuf/proto"
+	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 )
 
-func objectToStdout(obj interface{}) error {
-	data, err := json.Marshal(obj)
+func objectToStdout(obj protoreflect.ProtoMessage) error {
+	data, err := proto.Marshal(obj)
 	if err != nil {
 		return err
 	}
@@ -22,7 +25,7 @@ func objectToStdout(obj interface{}) error {
 	return nil
 }
 
-func objectFromStdin(obj interface{}) error {
+func objectFromStdin(obj protoreflect.ProtoMessage) error {
 	reader := bufio.NewReader(os.Stdin)
 
 	data, err := reader.ReadBytes('\n')
@@ -30,7 +33,7 @@ func objectFromStdin(obj interface{}) error {
 		return err
 	}
 
-	err = json.Unmarshal(data, obj)
+	err = proto.Unmarshal(data, obj)
 	if err != nil {
 		return err
 	}
@@ -38,687 +41,1032 @@ func objectFromStdin(obj interface{}) error {
 	return nil
 }
 
-//go:wasmimport zellij host_subscribe
-func hostSubscribe()
+//go:wasmimport zellij host_run_plugin_command
+func hostRunPluginCommand()
 
 func Subscribe(eventTypes []EventType) error {
-	err := objectToStdout(eventTypes)
-	if err != nil {
-		return nil
+	pc := PluginCommand{
+		Name: CommandName_Subscribe,
+		Payload: &PluginCommand_SubscribePayload{
+			SubscribePayload: &SubscribePayload{
+				Subscriptions: &EventNameList{
+					EventTypes: eventTypes,
+				},
+			},
+		},
 	}
-	hostSubscribe()
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
 	return nil
 }
-
-//go:wasmimport zellij host_unsubscribe
-func hostUnsubscribe()
 
 func Unsubscribe(eventTypes []EventType) error {
-	err := objectToStdout(eventTypes)
-	if err != nil {
-		return nil
+	pc := PluginCommand{
+		Name: CommandName_Unsubscribe,
+		Payload: &PluginCommand_UnsubscribePayload{
+			UnsubscribePayload: &UnsubscribePayload{
+				Subscriptions: &EventNameList{
+					EventTypes: eventTypes,
+				},
+			},
+		},
 	}
-	hostUnsubscribe()
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
 	return nil
 }
 
-//go:wasmimport zellij set_selectable
-func hostSetSelectable(selectable int32)
-
-func SetSelectable(selectable bool) {
-	var intSelectable int32
-	if selectable {
-		intSelectable = 1
-	} else {
-		intSelectable = 0
+func SetSelectable(selectable bool) error {
+	pc := PluginCommand{
+		Name: CommandName_Unsubscribe,
+		Payload: &PluginCommand_SetSelectablePayload{
+			SetSelectablePayload: selectable,
+		},
 	}
-	hostSetSelectable(intSelectable)
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
 }
 
-//go:wasmimport zellij host_get_plugin_ids
-func hostGetPluginIds()
-
-func GetPluginIds() string {
-	hostGetPluginIds()
-
-	reader := bufio.NewReader(os.Stdin)
-	plugin_ids, _ := reader.ReadString('\n')
-	return plugin_ids
-}
-
-//go:wasmimport zellij host_get_zellij_version
-func hostGetZellijVersion()
-
-func GetZellijVersion() (string, error) {
-	hostGetZellijVersion()
-
-	zellijVersion := ""
-	err := objectFromStdin(&zellijVersion)
+func GetPluginIds() (string, error) {
+	pc := PluginCommand{
+		Name:    CommandName_GetPluginIds,
+		Payload: nil,
+	}
+	err := objectToStdout(&pc)
 	if err != nil {
 		return "", err
 	}
-	return zellijVersion, nil
+
+	hostRunPluginCommand()
+
+	pluginIDs := PluginIds{}
+	err = objectFromStdin(&pluginIDs)
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprint(pluginIDs.GetPluginId()), nil
 }
 
-//go:wasmimport zellij host_open_file
-func hostOpenFile()
+func GetZellijVersion() (string, error) {
+	pc := PluginCommand{
+		Name:    CommandName_GetZellijVersion,
+		Payload: nil,
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return "", err
+	}
 
-func OpenFile(filepath string) error {
-	err := objectToStdout(filepath)
+	hostRunPluginCommand()
+
+	zellijVersion := ZellijVersion{}
+	err = objectFromStdin(&zellijVersion)
+	if err != nil {
+		return "", err
+	}
+	return zellijVersion.GetVersion(), nil
+}
+
+func OpenFile(file *File) error {
+	pc := PluginCommand{
+		Name: CommandName_OpenFile,
+		Payload: &PluginCommand_OpenFilePayload{
+			OpenFilePayload: &OpenFilePayload{
+				FileToOpen: file,
+			},
+		},
+	}
+	err := objectToStdout(&pc)
 	if err != nil {
 		return err
 	}
-	hostOpenFile()
+	hostRunPluginCommand()
 	return nil
 }
 
-//go:wasmimport zellij host_open_file_floating
-func hostOpenFileFloating()
-
-func OpenFileFloating(filepath string) error {
-	err := objectToStdout(filepath)
+func OpenFileFloating(file *File) error {
+	pc := PluginCommand{
+		Name: CommandName_OpenFileFloating,
+		Payload: &PluginCommand_OpenFileFloatingPayload{
+			OpenFileFloatingPayload: &OpenFilePayload{
+				FileToOpen: file,
+			},
+		},
+	}
+	err := objectToStdout(&pc)
 	if err != nil {
 		return err
 	}
-
-	hostOpenFileFloating()
+	hostRunPluginCommand()
 	return nil
 }
-
-//go:wasmimport zellij host_open_file_with_line
-func hostOpenFileWithLine()
-
-func OpenFileWithLine(filepath string, line uint32) error {
-	data := []interface{}{filepath, line}
-	err := objectToStdout(data)
-	if err != nil {
-		return err
-	}
-
-	hostOpenFileWithLine()
-	return nil
-}
-
-//go:wasmimport zellij host_open_file_with_line_floating
-func hostOpenFileWithLineFloating()
-
-func OpenFileWithLineFloating(filepath string, line uint32) error {
-	data := []interface{}{filepath, line}
-	err := objectToStdout(data)
-	if err != nil {
-		return err
-	}
-
-	hostOpenFileWithLineFloating()
-	return nil
-}
-
-//go:wasmimport zellij host_open_terminal
-func hostOpenTerminal()
 
 func OpenTerminal(filepath string) error {
-	err := objectToStdout(filepath)
+	pc := PluginCommand{
+		Name: CommandName_OpenTerminal,
+		Payload: &PluginCommand_OpenTerminalPayload{
+			OpenTerminalPayload: &OpenFilePayload{
+				FileToOpen: &File{
+					Path: filepath,
+				},
+			},
+		},
+	}
+	err := objectToStdout(&pc)
 	if err != nil {
 		return err
 	}
-
-	hostOpenTerminal()
+	hostRunPluginCommand()
 	return nil
 }
-
-//go:wasmimport zellij host_open_terminal_floating
-func hostOpenTerminalFloating()
 
 func OpenTerminalFloating(filepath string) error {
-	err := objectToStdout(filepath)
+	pc := PluginCommand{
+		Name: CommandName_OpenTerminalFloating,
+		Payload: &PluginCommand_OpenTerminalFloatingPayload{
+			OpenTerminalFloatingPayload: &OpenFilePayload{
+				FileToOpen: &File{
+					Path: filepath,
+				},
+			},
+		},
+	}
+	err := objectToStdout(&pc)
 	if err != nil {
 		return err
 	}
-
-	hostOpenTerminalFloating()
+	hostRunPluginCommand()
 	return nil
 }
 
-//go:wasmimport zellij host_open_command_pane
-func hostOpenCommandPane()
-
-func OpenCommandPane(command string, args []string) error {
-	fullCommand := append([]string{command}, args...)
-	err := objectToStdout(fullCommand)
+func OpenCommandPane(command *Command) error {
+	pc := PluginCommand{
+		Name: CommandName_OpenCommandPane,
+		Payload: &PluginCommand_OpenCommandPanePayload{
+			OpenCommandPanePayload: &OpenCommandPanePayload{
+				CommandToRun: command,
+			},
+		},
+	}
+	err := objectToStdout(&pc)
 	if err != nil {
 		return err
 	}
-	hostOpenCommandPane()
+	hostRunPluginCommand()
 	return nil
 }
 
-//go:wasmimport zellij host_open_command_pane_floating
-func hostOpenCommandPaneFloating()
-
-func OpenCommandPaneFloating(command string, args []string) error {
-	fullCommand := append([]string{command}, args...)
-	err := objectToStdout(fullCommand)
+func OpenCommandPaneFloating(command *Command) error {
+	pc := PluginCommand{
+		Name: CommandName_OpenCommandPaneFloating,
+		Payload: &PluginCommand_OpenCommandPaneFloatingPayload{
+			OpenCommandPaneFloatingPayload: &OpenCommandPanePayload{
+				CommandToRun: command,
+			},
+		},
+	}
+	err := objectToStdout(&pc)
 	if err != nil {
 		return err
 	}
-	hostOpenCommandPaneFloating()
+	hostRunPluginCommand()
 	return nil
 }
 
-//go:wasmimport zellij host_switch_to_tab
-func hostSwitchToTab(tab_idx uint32)
-
-func SwitchToTab(tab_idx uint32) error {
-	hostSwitchToTab(tab_idx)
+func SwitchToTab(tabIdx int32) error { //TODO: try to use uint32
+	pc := PluginCommand{
+		Name: CommandName_SwitchTabTo,
+		Payload: &PluginCommand_SwitchTabToPayload{
+			SwitchTabToPayload: &SwitchTabToPayload{
+				TabIndex: tabIdx,
+			},
+		},
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
 	return nil
 }
 
-//go:wasmimport zellij host_set_timeout
-func hostSetTimeout(secs float64)
-
-func SetTimeout(secs float64) error {
-	hostSetTimeout(secs)
+func SetTimeout(secs float32) error { //TODO: try to use float64
+	pc := PluginCommand{
+		Name: CommandName_SetTimeout,
+		Payload: &PluginCommand_SetTimeoutPayload{
+			SetTimeoutPayload: &SetTimeoutPayload{
+				Seconds: secs,
+			},
+		},
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
 	return nil
 }
-
-//go:wasmimport zellij host_exec_cmd
-func hostExecCmd()
 
 func ExecCmd(cmd []string) error {
-	err := objectToStdout(cmd)
+	pc := PluginCommand{
+		Name: CommandName_ExecCmd,
+		Payload: &PluginCommand_ExecCmdPayload{
+			ExecCmdPayload: &ExecCmdPayload{
+				CommandLine: cmd,
+			},
+		},
+	}
+	err := objectToStdout(&pc)
 	if err != nil {
 		return err
 	}
-	hostExecCmd()
+	hostRunPluginCommand()
 	return nil
 }
 
-//go:wasmimport zellij host_hide_self
-func hostHideSelf()
-
-func HideSelf() {
-	hostHideSelf()
-}
-
-//go:wasmimport zellij host_show_self
-func hostShowSelf(shouldFloatIfHidden uint32)
-
-func ShowSelf(shouldFloatIfHidden bool) {
-	var flag uint32
-	if shouldFloatIfHidden {
-		flag = 1
-	} else {
-		flag = 0
+func HideSelf() error {
+	pc := PluginCommand{
+		Name:    CommandName_HideSelf,
+		Payload: nil,
 	}
-	hostShowSelf(flag)
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
 }
 
-//go:wasmimport zellij host_switch_to_input_mode
-func hostSwitchToInputMode()
+func ShowSelf(shouldFloatIfHidden bool) error {
+	pc := PluginCommand{
+		Name: CommandName_HideSelf,
+		Payload: &PluginCommand_ShowSelfPayload{
+			ShowSelfPayload: shouldFloatIfHidden,
+		},
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
+}
 
 func SwitchToInputMode(inputMode InputMode) error {
-	err := objectToStdout(inputMode)
+	pc := PluginCommand{
+		Name: CommandName_SwitchToMode,
+		Payload: &PluginCommand_SwitchToModePayload{
+			SwitchToModePayload: &SwitchToModePayload{
+				InputMode: &InputModeMessage{
+					InputMode: inputMode,
+				},
+			},
+		},
+	}
+	err := objectToStdout(&pc)
 	if err != nil {
 		return err
 	}
-	hostSwitchToInputMode()
+	hostRunPluginCommand()
 	return nil
 }
-
-//go:wasmimport zellij host_new_tabs_with_layout
-func hostNewTabsWithLayout()
 
 func NewTabsWithLayout(layout string) error {
-	err := objectToStdout(layout)
+	pc := PluginCommand{
+		Name: CommandName_NewTabsWithLayout,
+		Payload: &PluginCommand_NewTabsWithLayoutPayload{
+			NewTabsWithLayoutPayload: layout,
+		},
+	}
+	err := objectToStdout(&pc)
 	if err != nil {
 		return err
 	}
-	hostNewTabsWithLayout()
+	hostRunPluginCommand()
 	return nil
 }
 
-//go:wasmimport zellij host_new_tab
-func hostNewTab()
-
-func NewTab() {
-	hostNewTab()
+func NewTab() error {
+	pc := PluginCommand{
+		Name:    CommandName_NewTab,
+		Payload: nil,
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
 }
 
-//go:wasmimport zellij host_go_to_next_tab
-func hostGoToNextTab()
-
-func GoToNextTab() {
-	hostGoToNextTab()
+func GoToNextTab() error {
+	pc := PluginCommand{
+		Name:    CommandName_GoToNextTab,
+		Payload: nil,
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
 }
 
-//go:wasmimport zellij host_go_to_previous_tab
-func hostGoToPreviousTab()
-
-func GoToPreviousTab() {
-	hostGoToPreviousTab()
+func GoToPreviousTab() error {
+	pc := PluginCommand{
+		Name:    CommandName_GoToPreviousTab,
+		Payload: nil,
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
 }
-
-//go:wasmimport zellij host_report_panic
-func hostReportPanic()
 
 func reportPanic() {
 	r := recover()
+	var panicPayload string
 	if r != nil {
 		stack := debug.Stack()
 		stacktrace := fmt.Sprintf("%w\n\n%s", r, stack)
-
-		fmt.Println("")
-		fmt.Println("A panic occured in a plugin")
-		fmt.Println(stacktrace)
-		hostReportPanic()
+		panicPayload = strings.ReplaceAll(stacktrace, "\n", "\r\n")
+	} else {
+		panicPayload = "<NO PAYLOAD>"
 	}
+
+	pc := PluginCommand{
+		Name: CommandName_ReportCrash,
+		Payload: &PluginCommand_ReportCrashPayload{
+			ReportCrashPayload: panicPayload,
+		},
+	}
+	_ = objectToStdout(&pc) // come on...
+
+	hostRunPluginCommand()
 }
 
-// TODO
-//
-//go:wasmimport zellij host_resize_focused_pane
-func hostResizeFocusedPane()
-
-func ResizeFocusedPane(resize map[string]string) error {
-	err := objectToStdout(resize)
+func ResizeFocusedPane(resize ResizeAction) error {
+	pc := PluginCommand{
+		Name: CommandName_Resize,
+		Payload: &PluginCommand_ResizePayload{
+			ResizePayload: &ResizePayload{
+				Resize: &Resize{
+					ResizeAction: resize,
+					Direction:    nil,
+				},
+			},
+		},
+	}
+	err := objectToStdout(&pc)
 	if err != nil {
 		return err
 	}
-	hostResizeFocusedPane()
+	hostRunPluginCommand()
 	return nil
 }
 
-//go:wasmimport zellij host_resize_focused_pane_with_direction
-func hostResizeFocusedPaneWithDirection()
-
-func ResizeFocusedPaneWithDirection(resize map[string]string, direction map[string]string) error {
-	object := []interface{}{resize, direction}
-	err := objectToStdout(object)
+func ResizeFocusedPaneWithDirection(resize ResizeAction, direction ResizeDirection) error {
+	pc := PluginCommand{
+		Name: CommandName_Resize,
+		Payload: &PluginCommand_ResizePayload{
+			ResizePayload: &ResizePayload{
+				Resize: &Resize{
+					ResizeAction: resize,
+					Direction:    &direction,
+				},
+			},
+		},
+	}
+	err := objectToStdout(&pc)
 	if err != nil {
 		return err
 	}
-	hostResizeFocusedPaneWithDirection()
+	hostRunPluginCommand()
 	return nil
 }
 
-//go:wasmimport zellij host_focus_next_pan
-func hostFocusNextPane()
-
-func FocusNextPane() {
-	hostFocusNextPane()
-}
-
-//go:wasmimport zellij host_focus_previous_pan
-func hostFocusPreviousPane()
-
-func FocusPreviousPane() {
-	hostFocusPreviousPane()
-}
-
-// TODO
-//
-//go:wasmimport zellij host_move_focus
-func hostMoveFocus()
-
-func MoveFocus(direction map[string]string) error {
-	err := objectToStdout(direction)
+func FocusNextPane() error {
+	pc := PluginCommand{
+		Name:    CommandName_FocusNextPane,
+		Payload: nil,
+	}
+	err := objectToStdout(&pc)
 	if err != nil {
 		return err
 	}
-	hostMoveFocus()
+	hostRunPluginCommand()
 	return nil
 }
 
-// TODO
-//
-//go:wasmimport zellij host_move_focus_or_tab
-func hostMoveFocusOrTab()
-
-func MoveFocusOrTab(direction map[string]string) error {
-	err := objectToStdout(direction)
+func FocusPreviousPane() error {
+	pc := PluginCommand{
+		Name:    CommandName_FocusPreviousPane,
+		Payload: nil,
+	}
+	err := objectToStdout(&pc)
 	if err != nil {
 		return err
 	}
-	hostMoveFocusOrTab()
+	hostRunPluginCommand()
 	return nil
 }
 
-//go:wasmimport zellij host_detach
-func hostDetach()
-
-func Detach() {
-	hostDetach()
+func MoveFocus(direction ResizeDirection) error {
+	pc := PluginCommand{
+		Name: CommandName_MoveFocus,
+		Payload: &PluginCommand_MoveFocusPayload{
+			MoveFocusPayload: &MovePayload{
+				Direction: &MoveDirection{
+					Direction: direction,
+				},
+			},
+		},
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
 }
 
-//go:wasmimport zellij host_edit_scrollback
-func hostEditScrollback()
-
-func EditScrollback() {
-	hostEditScrollback()
+func MoveFocusOrTab(direction ResizeDirection) error {
+	pc := PluginCommand{
+		Name: CommandName_MoveFocusOrTab,
+		Payload: &PluginCommand_MoveFocusOrTabPayload{
+			MoveFocusOrTabPayload: &MovePayload{
+				Direction: &MoveDirection{
+					Direction: direction,
+				},
+			},
+		},
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
 }
 
-//go:wasmimport zellij host_write
-func hostWrite()
+func Detach() error {
+	pc := PluginCommand{
+		Name:    CommandName_Detach,
+		Payload: nil,
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
+}
+
+func EditScrollback() error {
+	pc := PluginCommand{
+		Name:    CommandName_EditScrollback,
+		Payload: nil,
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
+}
 
 func Write(bytes []byte) error {
-	err := objectToStdout(bytes)
+	pc := PluginCommand{
+		Name: CommandName_Write,
+		Payload: &PluginCommand_WritePayload{
+			WritePayload: bytes,
+		},
+	}
+	err := objectToStdout(&pc)
 	if err != nil {
 		return err
 	}
-	hostWrite()
+	hostRunPluginCommand()
 	return nil
 }
-
-//go:wasmimport zellij host_write_chars
-func hostWriteChars()
 
 func WriteChars(chars string) error {
-	err := objectToStdout(chars)
+	pc := PluginCommand{
+		Name: CommandName_WriteChars,
+		Payload: &PluginCommand_WriteCharsPayload{
+			WriteCharsPayload: chars,
+		},
+	}
+	err := objectToStdout(&pc)
 	if err != nil {
 		return err
 	}
-	hostWriteChars()
+	hostRunPluginCommand()
 	return nil
 }
 
-//go:wasmimport zellij host_toggle_tab
-func hostToggleTab()
-
-func ToggleTab() {
-	hostToggleTab()
-}
-
-//go:wasmimport zellij host_move_pane
-func hostMovePane()
-
-func MovePane() {
-	hostMovePane()
-}
-
-// TODO
-//
-//go:wasmimport zellij host_move_pane_with_direction
-func hostMovePaneWithDirection()
-
-func MovePaneWithDirection(direction map[string]string) error {
-	err := objectToStdout(direction)
+func ToggleTab() error {
+	pc := PluginCommand{
+		Name:    CommandName_ToggleTab,
+		Payload: nil,
+	}
+	err := objectToStdout(&pc)
 	if err != nil {
 		return err
 	}
-	hostMovePaneWithDirection()
+	hostRunPluginCommand()
 	return nil
 }
 
-//go:wasmimport zellij host_clear_screen
-func hostClearScreen()
-
-func ClearScreen() {
-	hostClearScreen()
+func MovePane() error {
+	pc := PluginCommand{
+		Name:    CommandName_MovePane,
+		Payload: nil,
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
 }
 
-//go:wasmimport zellij host_scroll_up
-func hostScrollUp()
-
-func ScrollUp() {
-	hostScrollUp()
+func MovePaneWithDirection(direction ResizeDirection) error {
+	pc := PluginCommand{
+		Name: CommandName_MovePaneWithDirection,
+		Payload: &PluginCommand_MovePaneWithDirectionPayload{
+			MovePaneWithDirectionPayload: &MovePayload{
+				Direction: &MoveDirection{
+					Direction: direction,
+				},
+			},
+		},
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
 }
 
-//go:wasmimport zellij host_scroll_down
-func hostScrollDown()
-
-func ScrollDown() {
-	hostScrollDown()
+func ClearScreen() error {
+	pc := PluginCommand{
+		Name:    CommandName_ClearScreen,
+		Payload: nil,
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
 }
 
-//go:wasmimport zellij host_scroll_to_top
-func hostScrollToTop()
-
-func ScrollToTop() {
-	hostScrollToTop()
+func ScrollUp() error {
+	pc := PluginCommand{
+		Name:    CommandName_ScrollUp,
+		Payload: nil,
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
 }
 
-//go:wasmimport zellij host_scroll_to_bottom
-func hostScrollToBottom()
-
-func ScrollToBottom() {
-	hostScrollToBottom()
+func ScrollDown() error {
+	pc := PluginCommand{
+		Name:    CommandName_ScrollDown,
+		Payload: nil,
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
 }
 
-//go:wasmimport zellij host_page_scroll_up
-func hostPageScrollUp()
-
-func PageScrollUp() {
-	hostPageScrollUp()
+func ScrollToTop() error {
+	pc := PluginCommand{
+		Name:    CommandName_ScrollToTop,
+		Payload: nil,
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
 }
 
-//go:wasmimport zellij host_page_scroll_down
-func hostPageScrollDown()
-
-func PageScrollDown() {
-	hostPageScrollDown()
+func ScrollToBottom() error {
+	pc := PluginCommand{
+		Name:    CommandName_ScrollToBottom,
+		Payload: nil,
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
 }
 
-//go:wasmimport zellij host_toggle_focus_fullscreen
-func hostToggleFocusFullscreen()
-
-func ToggleFocusFullscreen() {
-	hostToggleFocusFullscreen()
+func PageScrollUp() error {
+	pc := PluginCommand{
+		Name:    CommandName_PageScrollUp,
+		Payload: nil,
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
 }
 
-//go:wasmimport zellij host_toggle_pane_frames
-func hostTogglePaneFrames()
-
-func TogglePaneFrames() {
-	hostTogglePaneFrames()
+func PageScrollDown() error {
+	pc := PluginCommand{
+		Name:    CommandName_PageScrollDown,
+		Payload: nil,
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
 }
 
-//go:wasmimport zellij host_toggle_pane_embed_or_eject
-func hostTogglePaneEmbedOrEject()
-
-func TogglePaneEmbedOrEject() {
-	hostTogglePaneEmbedOrEject()
+func ToggleFocusFullscreen() error {
+	pc := PluginCommand{
+		Name:    CommandName_ToggleFocusFullscreen,
+		Payload: nil,
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
 }
 
-//go:wasmimport zellij host_undo_rename_pane
-func hostUndoRenamePane()
-
-func UndoRenamePane() {
-	hostUndoRenamePane()
+func TogglePaneFrames() error {
+	pc := PluginCommand{
+		Name:    CommandName_TogglePaneFrames,
+		Payload: nil,
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
 }
 
-//go:wasmimport zellij host_close_focus
-func hostCloseFocus()
-
-func CloseFocus() {
-	hostCloseFocus()
+func TogglePaneEmbedOrEject() error {
+	pc := PluginCommand{
+		Name:    CommandName_TogglePaneEmbedOrEject,
+		Payload: nil,
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
 }
 
-//go:wasmimport zellij host_toggle_active_tab_sync
-func hostToggleActiveTabSync()
-
-func ToggleActiveTabSync() {
-	hostToggleActiveTabSync()
+func UndoRenamePane() error {
+	pc := PluginCommand{
+		Name:    CommandName_UndoRenamePane,
+		Payload: nil,
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
 }
 
-//go:wasmimport zellij host_close_focused_tab
-func hostCloseFocusedTab()
-
-func CloseFocusedTab() {
-	hostCloseFocusedTab()
+func CloseFocus() error {
+	pc := PluginCommand{
+		Name:    CommandName_CloseFocus,
+		Payload: nil,
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
 }
 
-//go:wasmimport zellij host_undo_rename_tab
-func hostUndoRenameTab()
-
-func UndoRenameTab() {
-	hostUndoRenameTab()
+func ToggleActiveTabSync() error {
+	pc := PluginCommand{
+		Name:    CommandName_ToggleActiveTabSync,
+		Payload: nil,
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
 }
 
-//go:wasmimport zellij host_quit_zellij
-func hostQuitZellij()
-
-func QuitZellij() {
-	hostQuitZellij()
+func CloseFocusedTab() error {
+	pc := PluginCommand{
+		Name:    CommandName_CloseFocusedTab,
+		Payload: nil,
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
 }
 
-//go:wasmimport zellij host_previous_swap_layout
-func hostPreviousSwapLayout()
-
-func PreviousSwapLayout() {
-	hostPreviousSwapLayout()
+func UndoRenameTab() error {
+	pc := PluginCommand{
+		Name:    CommandName_UndoRenameTab,
+		Payload: nil,
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
 }
 
-//go:wasmimport zellij host_next_swap_layout
-func hostNextSwapLayout()
-
-func NextSwapLayout() {
-	hostNextSwapLayout()
+func QuitZellij() error {
+	pc := PluginCommand{
+		Name:    CommandName_QuitZellij,
+		Payload: nil,
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
 }
 
-//go:wasmimport zellij host_go_to_tab_name
-func hostGoToTabName()
+func PreviousSwapLayout() error {
+	pc := PluginCommand{
+		Name:    CommandName_PreviousSwapLayout,
+		Payload: nil,
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
+}
+
+func NextSwapLayout() error {
+	pc := PluginCommand{
+		Name:    CommandName_NextSwapLayout,
+		Payload: nil,
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
+}
 
 func GoToTabName(tabName string) error {
-	err := objectToStdout(tabName)
+	pc := PluginCommand{
+		Name: CommandName_GoToTabName,
+		Payload: &PluginCommand_GoToTabNamePayload{
+			GoToTabNamePayload: tabName,
+		},
+	}
+	err := objectToStdout(&pc)
 	if err != nil {
 		return err
 	}
-	hostGoToTabName()
+	hostRunPluginCommand()
 	return nil
 }
-
-//go:wasmimport zellij host_focus_or_create_tab
-func hostFocusOrCreateTab()
 
 func FocusOrCreateTab(tabName string) error {
-	err := objectToStdout(tabName)
+	pc := PluginCommand{
+		Name: CommandName_FocusOrCreateTab,
+		Payload: &PluginCommand_FocusOrCreateTabPayload{
+			FocusOrCreateTabPayload: tabName,
+		},
+	}
+	err := objectToStdout(&pc)
 	if err != nil {
 		return err
 	}
-	hostFocusOrCreateTab()
+	hostRunPluginCommand()
 	return nil
 }
 
-//go:wasmimport zellij host_go_to_tab
-func hostGoToTab(tabIndex uint32)
-
-func GoToTab(tabIndex uint32) {
-	hostGoToTab(tabIndex)
+func GoToTab(tabIndex int32) error { //TODO: use uint32
+	pc := PluginCommand{
+		Name: CommandName_GoToTab,
+		Payload: &PluginCommand_GoToTabPayload{
+			GoToTabPayload: tabIndex,
+		},
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
 }
-
-//go:wasmimport zellij host_start_or_reload_plugin
-func hostStartOrReloadPlugin()
 
 func StartOrReloadPlugin(url string) error {
-	err := objectToStdout(url)
+	pc := PluginCommand{
+		Name: CommandName_StartOrReloadPlugin,
+		Payload: &PluginCommand_StartOrReloadPluginPayload{
+			StartOrReloadPluginPayload: url,
+		},
+	}
+	err := objectToStdout(&pc)
 	if err != nil {
 		return err
 	}
-	hostStartOrReloadPlugin()
+	hostRunPluginCommand()
 	return nil
 }
 
-//go:wasmimport zellij host_close_terminal_pane
-func hostCloseTerminalPane(terminalPaneId uint32)
-
-func CloseTerminalPane(terminalPaneId uint32) {
-	hostCloseTerminalPane(terminalPaneId)
-}
-
-//go:wasmimport zellij host_close_terminal_pane
-func hostClosePluginPane(pluginPaneId uint32)
-
-func ClosePluginPane(pluginPaneId uint32) {
-	hostClosePluginPane(pluginPaneId)
-}
-
-//go:wasmimport zellij host_focus_terminal_pane
-func hostFocusTerminalPane(terminalPaneId int32, shouldFloatIfHidden int32)
-
-func FocusTerminalPane(terminalPaneId int32, shouldFloatIfHidden bool) {
-	var shouldFloat int32
-	if shouldFloatIfHidden {
-		shouldFloat = 1
-	} else {
-		shouldFloat = 0
+func CloseTerminalPane(terminalPaneId int32) error { //TODO: use uint32
+	pc := PluginCommand{
+		Name: CommandName_CloseTerminalPane,
+		Payload: &PluginCommand_CloseTerminalPanePayload{
+			CloseTerminalPanePayload: terminalPaneId,
+		},
 	}
-	hostFocusTerminalPane(terminalPaneId, shouldFloat)
-}
-
-//go:wasmimport zellij host_focus_plugin_pane
-func hostFocusPluginPane(pluginPaneId int32, shouldFloatIfHidden int32)
-
-func CloseFocusPane(pluginPaneId int32, shouldFloatIfHidden bool) {
-	var shouldFloat int32
-	if shouldFloatIfHidden {
-		shouldFloat = 1
-	} else {
-		shouldFloat = 0
-	}
-	hostFocusPluginPane(pluginPaneId, shouldFloat)
-}
-
-//go:wasmimport zellij host_rename_terminal_pane
-func hostRenameTerminalPane()
-
-func RenameTerminalPane(terminalPaneId uint32, newName string) error {
-	object := []interface{}{terminalPaneId, newName}
-	err := objectToStdout(object)
+	err := objectToStdout(&pc)
 	if err != nil {
 		return err
 	}
-	hostRenameTerminalPane()
+	hostRunPluginCommand()
 	return nil
 }
 
-//go:wasmimport zellij host_rename_plugin_pane
-func hostRenamePluginPane()
-
-func RenamePluginPane(pluginPaneId uint32, newName string) error {
-	object := []interface{}{pluginPaneId, newName}
-	err := objectToStdout(object)
+func ClosePluginPane(pluginPaneId int32) error { //TODO: use uint32
+	pc := PluginCommand{
+		Name: CommandName_ClosePluginPane,
+		Payload: &PluginCommand_ClosePluginPanePayload{
+			ClosePluginPanePayload: pluginPaneId,
+		},
+	}
+	err := objectToStdout(&pc)
 	if err != nil {
 		return err
 	}
-	hostRenamePluginPane()
+	hostRunPluginCommand()
 	return nil
 }
 
-//go:wasmimport zellij host_rename_tab
-func hostRenameTab()
-
-func RenameTab(tabPosition uint32, newName string) error {
-	object := []interface{}{tabPosition, newName}
-	err := objectToStdout(object)
+func FocusTerminalPane(terminalPaneId uint32, shouldFloatIfHidden bool) error {
+	pc := PluginCommand{
+		Name: CommandName_FocusTerminalPane,
+		Payload: &PluginCommand_FocusTerminalPanePayload{
+			FocusTerminalPanePayload: &PaneIdAndShouldFloat{
+				PaneId:              terminalPaneId,
+				ShouldFloatIfHidden: shouldFloatIfHidden,
+			},
+		},
+	}
+	err := objectToStdout(&pc)
 	if err != nil {
 		return err
 	}
-	hostRenamePluginPane()
+	hostRunPluginCommand()
 	return nil
 }
 
-//go:wasmimport zellij host_post_message_to
-func hostPostMessageTo()
-
-func PostMessageTo(workerName string, message string, payload string) error {
-	object := []interface{}{workerName, message, payload}
-	err := objectToStdout(object)
+func FocusPluginPane(pluginPaneId uint32, shouldFloatIfHidden bool) error {
+	pc := PluginCommand{
+		Name: CommandName_FocusPluginPane,
+		Payload: &PluginCommand_FocusPluginPanePayload{
+			FocusPluginPanePayload: &PaneIdAndShouldFloat{
+				PaneId:              pluginPaneId,
+				ShouldFloatIfHidden: shouldFloatIfHidden,
+			},
+		},
+	}
+	err := objectToStdout(&pc)
 	if err != nil {
 		return err
 	}
-	hostPostMessageTo()
+	hostRunPluginCommand()
 	return nil
 }
 
-//go:wasmimport zellij host_post_message_to_plugin
-func hostPostMessageToPlugin()
-
-func PostMessageToPlugin(message string, payload string) error {
-	object := []interface{}{message, payload}
-	err := objectToStdout(object)
+func RenameTerminalPane(terminalPaneId int32, newName string) error { //TODO: use uint32
+	pc := PluginCommand{
+		Name: CommandName_RenameTerminalPane,
+		Payload: &PluginCommand_RenameTerminalPanePayload{
+			RenameTerminalPanePayload: &IdAndNewName{
+				Id:      terminalPaneId,
+				NewName: newName,
+			},
+		},
+	}
+	err := objectToStdout(&pc)
 	if err != nil {
 		return err
 	}
-	hostPostMessageToPlugin()
+	hostRunPluginCommand()
+	return nil
+}
+
+func RenamePluginPane(pluginPaneId int32, newName string) error { //TODO: use uint32
+	pc := PluginCommand{
+		Name: CommandName_RenamePluginPane,
+		Payload: &PluginCommand_RenamePluginPanePayload{
+			RenamePluginPanePayload: &IdAndNewName{
+				Id:      pluginPaneId,
+				NewName: newName,
+			},
+		},
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
+}
+
+func RenameTab(tabPosition int32, newName string) error { //TODO: use uint32
+	pc := PluginCommand{
+		Name: CommandName_RenameTab,
+		Payload: &PluginCommand_RenameTabPayload{
+			RenameTabPayload: &IdAndNewName{
+				Id:      tabPosition,
+				NewName: newName,
+			},
+		},
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
+}
+
+func PostMessageTo(message *Message) error {
+	pc := PluginCommand{
+		Name: CommandName_PostMessageTo,
+		Payload: &PluginCommand_PostMessageToPayload{
+			PostMessageToPayload: &PluginMessagePayload{
+				Message: message,
+			},
+		},
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
+}
+
+func PostMessageToPlugin(message *Message) error {
+	pc := PluginCommand{
+		Name: CommandName_PostMessageToPlugin,
+		Payload: &PluginCommand_PostMessageToPluginPayload{
+			PostMessageToPluginPayload: &PluginMessagePayload{
+				Message: message,
+			},
+		},
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
 	return nil
 }
