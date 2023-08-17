@@ -97,6 +97,23 @@ func SetSelectable(selectable bool) error {
 	return nil
 }
 
+func RequestPermission(permissions []PermissionType) error {
+	pc := PluginCommand{
+		Name: CommandName_RequestPluginPermissions,
+		Payload: &PluginCommand_RequestPluginPermissionPayload{
+			RequestPluginPermissionPayload: &RequestPluginPermissionPayload{
+				Permissions: permissions,
+			},
+		},
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
+}
+
 func GetPluginIds() (string, error) {
 	pc := PluginCommand{
 		Name:    CommandName_GetPluginIds,
