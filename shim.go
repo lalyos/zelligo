@@ -1054,6 +1054,44 @@ func RenameTab(tabPosition int32, newName string) error { //TODO: use uint32
 	return nil
 }
 
+func SwitchSession(name *string) error {
+	pc := PluginCommand{
+		Name: CommandName_SwitchSession,
+		Payload: &PluginCommand_SwitchSessionPayload{
+			SwitchSessionPayload: &SwitchSessionPayload{
+				Name: name,
+			},
+		},
+	}
+
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
+}
+
+func SwitchSessionWithFocus(name string, tabPosition *uint32, paneId *uint32) error {
+	pc := PluginCommand{
+		Name: CommandName_SwitchSession,
+		Payload: &PluginCommand_SwitchSessionPayload{
+			SwitchSessionPayload: &SwitchSessionPayload{
+				Name:        &name,
+				TabPosition: tabPosition,
+				PaneId:      paneId,
+			},
+		},
+	}
+
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
+}
+
 func PostMessageTo(message *Message) error {
 	pc := PluginCommand{
 		Name: CommandName_PostMessageTo,
