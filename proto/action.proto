@@ -1,17 +1,17 @@
 syntax = "proto3";
 
+import "input_mode.proto";
 import "resize.proto";
-import "shared.proto";
 
 package api.action;
 
 message Action {
   ActionName name = 1;
   oneof optional_payload {
-    shared.SwitchToModePayload switch_to_mode_payload = 2;
+    SwitchToModePayload switch_to_mode_payload = 2;
     WritePayload write_payload = 3;
     WriteCharsPayload write_chars_payload = 4;
-    shared.SwitchToModePayload switch_mode_for_all_clients_payload = 5;
+    SwitchToModePayload switch_mode_for_all_clients_payload = 5;
     resize.Resize resize_payload = 6;
     resize.ResizeDirection move_focus_payload = 7;
     resize.ResizeDirection move_focus_or_tab_payload = 8;
@@ -46,8 +46,8 @@ message Action {
     string start_or_reload_plugin_payload = 37;
     uint32 close_terminal_pane_payload = 38;
     uint32 close_plugin_pane_payload = 39;
-    shared.PaneIdAndShouldFloat focus_terminal_pane_with_id_payload = 40;
-    shared.PaneIdAndShouldFloat focus_plugin_pane_with_id_payload = 41;
+    PaneIdAndShouldFloat focus_terminal_pane_with_id_payload = 40;
+    PaneIdAndShouldFloat focus_plugin_pane_with_id_payload = 41;
     IdAndName rename_terminal_pane_payload = 42;
     IdAndName rename_plugin_pane_payload = 43;
     IdAndName rename_tab_payload = 44;
@@ -57,6 +57,11 @@ message Action {
 message IdAndName {
   bytes name = 1;
   uint32 id = 2;
+}
+
+message PaneIdAndShouldFloat {
+  uint32 pane_id = 1;
+  bool should_float = 2;
 }
 
 message NewPluginPanePayload {
@@ -79,6 +84,7 @@ message LaunchOrFocusPluginPayload {
   string plugin_url = 1;
   bool should_float = 2;
   optional PluginConfiguration plugin_configuration = 3;
+  bool move_to_focused_tab = 4;
 }
 
 message GoToTabNamePayload {
@@ -114,6 +120,10 @@ message ScrollAtPayload {
 message NewPanePayload {
   optional resize.ResizeDirection direction = 1;
   optional string pane_name = 2;
+}
+
+message SwitchToModePayload {
+  input_mode.InputMode input_mode = 1;
 }
 
 message WritePayload {

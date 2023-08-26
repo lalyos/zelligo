@@ -261,7 +261,7 @@ func OpenCommandPaneFloating(command *Command) error {
 	return nil
 }
 
-func SwitchToTab(tabIdx int32) error { //TODO: try to use uint32
+func SwitchToTab(tabIdx uint32) error {
 	pc := PluginCommand{
 		Name: CommandName_SwitchTabTo,
 		Payload: &PluginCommand_SwitchTabToPayload{
@@ -278,7 +278,7 @@ func SwitchToTab(tabIdx int32) error { //TODO: try to use uint32
 	return nil
 }
 
-func SetTimeout(secs float32) error { //TODO: try to use float64
+func SetTimeout(secs float64) error {
 	pc := PluginCommand{
 		Name: CommandName_SetTimeout,
 		Payload: &PluginCommand_SetTimeoutPayload{
@@ -345,9 +345,7 @@ func SwitchToInputMode(inputMode InputMode) error {
 		Name: CommandName_SwitchToMode,
 		Payload: &PluginCommand_SwitchToModePayload{
 			SwitchToModePayload: &SwitchToModePayload{
-				InputMode: &InputModeMessage{
-					InputMode: inputMode,
-				},
+				InputMode: inputMode,
 			},
 		},
 	}
@@ -904,7 +902,7 @@ func FocusOrCreateTab(tabName string) error {
 	return nil
 }
 
-func GoToTab(tabIndex int32) error { //TODO: use uint32
+func GoToTab(tabIndex uint32) error {
 	pc := PluginCommand{
 		Name: CommandName_GoToTab,
 		Payload: &PluginCommand_GoToTabPayload{
@@ -934,7 +932,7 @@ func StartOrReloadPlugin(url string) error {
 	return nil
 }
 
-func CloseTerminalPane(terminalPaneId int32) error { //TODO: use uint32
+func CloseTerminalPane(terminalPaneId uint32) error {
 	pc := PluginCommand{
 		Name: CommandName_CloseTerminalPane,
 		Payload: &PluginCommand_CloseTerminalPanePayload{
@@ -949,7 +947,7 @@ func CloseTerminalPane(terminalPaneId int32) error { //TODO: use uint32
 	return nil
 }
 
-func ClosePluginPane(pluginPaneId int32) error { //TODO: use uint32
+func ClosePluginPane(pluginPaneId uint32) error {
 	pc := PluginCommand{
 		Name: CommandName_ClosePluginPane,
 		Payload: &PluginCommand_ClosePluginPanePayload{
@@ -964,13 +962,13 @@ func ClosePluginPane(pluginPaneId int32) error { //TODO: use uint32
 	return nil
 }
 
-func FocusTerminalPane(terminalPaneId uint32, shouldFloatIfHidden bool) error {
+func FocusTerminalPane(terminalPaneId uint32, shouldFloat bool) error {
 	pc := PluginCommand{
 		Name: CommandName_FocusTerminalPane,
 		Payload: &PluginCommand_FocusTerminalPanePayload{
 			FocusTerminalPanePayload: &PaneIdAndShouldFloat{
-				PaneId:              terminalPaneId,
-				ShouldFloatIfHidden: shouldFloatIfHidden,
+				PaneId:      terminalPaneId,
+				ShouldFloat: shouldFloat,
 			},
 		},
 	}
@@ -982,13 +980,13 @@ func FocusTerminalPane(terminalPaneId uint32, shouldFloatIfHidden bool) error {
 	return nil
 }
 
-func FocusPluginPane(pluginPaneId uint32, shouldFloatIfHidden bool) error {
+func FocusPluginPane(pluginPaneId uint32, shouldFloat bool) error {
 	pc := PluginCommand{
 		Name: CommandName_FocusPluginPane,
 		Payload: &PluginCommand_FocusPluginPanePayload{
 			FocusPluginPanePayload: &PaneIdAndShouldFloat{
-				PaneId:              pluginPaneId,
-				ShouldFloatIfHidden: shouldFloatIfHidden,
+				PaneId:      pluginPaneId,
+				ShouldFloat: shouldFloat,
 			},
 		},
 	}
@@ -1000,7 +998,7 @@ func FocusPluginPane(pluginPaneId uint32, shouldFloatIfHidden bool) error {
 	return nil
 }
 
-func RenameTerminalPane(terminalPaneId int32, newName string) error { //TODO: use uint32
+func RenameTerminalPane(terminalPaneId uint32, newName string) error {
 	pc := PluginCommand{
 		Name: CommandName_RenameTerminalPane,
 		Payload: &PluginCommand_RenameTerminalPanePayload{
@@ -1018,7 +1016,7 @@ func RenameTerminalPane(terminalPaneId int32, newName string) error { //TODO: us
 	return nil
 }
 
-func RenamePluginPane(pluginPaneId int32, newName string) error { //TODO: use uint32
+func RenamePluginPane(pluginPaneId uint32, newName string) error {
 	pc := PluginCommand{
 		Name: CommandName_RenamePluginPane,
 		Payload: &PluginCommand_RenamePluginPanePayload{
@@ -1036,7 +1034,7 @@ func RenamePluginPane(pluginPaneId int32, newName string) error { //TODO: use ui
 	return nil
 }
 
-func RenameTab(tabPosition int32, newName string) error { //TODO: use uint32
+func RenameTab(tabPosition uint32, newName string) error {
 	pc := PluginCommand{
 		Name: CommandName_RenameTab,
 		Payload: &PluginCommand_RenameTabPayload{
