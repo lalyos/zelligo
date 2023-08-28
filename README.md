@@ -37,7 +37,7 @@ However, it is young and experimental so expect bugs.
 
 ## Version support
 
-zelligo supports Zellij version 0.37.0 and later.
+zelligo supports Zellij version 0.38.0 and later.
 
 ## Example usage
 

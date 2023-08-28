@@ -20,7 +20,7 @@ func RegisterPlugin(p ZellijPlugin) {
 
 //export plugin_version
 func pluginVersion() {
-	fmt.Println("0.37.2")
+	fmt.Println("0.38.0")
 }
 
 //export load
