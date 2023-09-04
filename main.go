@@ -34,9 +34,12 @@ func load() {
 	}
 
 	configuration := make(map[string]string)
-	for _, g := range pluginConfiguration.NameAndValue {
-		if g != nil {
-			configuration[g.Name] = g.Value
+	nameAndValues := pluginConfiguration.GetNameAndValue()
+	if nameAndValues != nil {
+		for _, g := range nameAndValues {
+			if g != nil {
+				configuration[g.Name] = g.Value
+			}
 		}
 	}
 
