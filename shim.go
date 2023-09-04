@@ -413,14 +413,14 @@ func GoToPreviousTab() error {
 
 func reportPanic() {
 	r := recover()
-	var panicPayload string
-	if r != nil {
-		stack := debug.Stack()
-		stacktrace := fmt.Sprintf("%w\n\n%s", r, stack)
-		panicPayload = strings.ReplaceAll(stacktrace, "\n", "\r\n")
-	} else {
-		panicPayload = "<NO PAYLOAD>"
+	if r == nil {
+		fmt.Fprintf(os.Stderr, "No panic to report\n")
+		return
 	}
+
+	stack := debug.Stack()
+	stacktrace := fmt.Sprintf("%w\n\n%s", r, stack)
+	panicPayload := strings.ReplaceAll(stacktrace, "\n", "\r\n")
 
 	pc := PluginCommand{
 		Name: CommandName_ReportCrash,
@@ -428,7 +428,10 @@ func reportPanic() {
 			ReportCrashPayload: panicPayload,
 		},
 	}
-	_ = objectToStdout(&pc) // come on...
+	err = objectToStdout(&pc)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Could report panic. Dumping panic to stderr. Panic: %s\n", panicPayload)
+	}
 
 	hostRunPluginCommand()
 }
