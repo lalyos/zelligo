@@ -88,6 +88,7 @@ In order to develop `zelligo`, you need following:
 
 - Go version 1.21 or up/tinygo
 - [protoc](https://github.com/protocolbuffers/protobuf#protobuf-compiler-installation)
+- [protoc-gen-go](https://github.com/golang/protobuf) protoc plugin
 
 ## Improvements (MRs welcomed!)
 
