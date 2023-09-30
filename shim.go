@@ -2,38 +2,57 @@ package zelligo
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"os"
 	"runtime/debug"
 	"strings"
-
-	"google.golang.org/protobuf/proto"
-	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 )
 
-func objectToStdout(obj protoreflect.ProtoMessage) error {
-	data, err := proto.Marshal(obj)
+type Serializable interface {
+	MarshalVT() ([]byte, error)
+	UnmarshalVT([]byte) error
+}
+
+func objectToStdout(obj Serializable) error {
+	data, err := obj.MarshalVT()
 	if err != nil {
 		return err
 	}
 
-	_, err = os.Stdout.Write(data)
+	/*
+		https://pkg.go.dev/encoding/json#Marshal
+
+		> Array and slice values encode as JSON arrays, except that []byte encodes as a base64-encoded string, and a nil slice encodes as the null JSON value.
+
+		Therefore, we need to manually encode []byte to a JSON array of integers
+	*/
+	/*encodedData, err := json.Marshal(data)
 	if err != nil {
 		return err
-	}
+	}*/
+	encodedData := strings.Join(strings.Fields(fmt.Sprintf("%d", data)), ",")
+
+	fmt.Println(encodedData)
 
 	return nil
 }
 
-func objectFromStdin(obj protoreflect.ProtoMessage) error {
+func objectFromStdin(obj Serializable) error {
 	reader := bufio.NewReader(os.Stdin)
 
-	data, err := reader.ReadBytes('\n')
+	encodedData, err := reader.ReadBytes('\n')
 	if err != nil {
 		return err
 	}
 
-	err = proto.Unmarshal(data, obj)
+	var data []byte
+	err = json.Unmarshal(encodedData, &data)
+	if err != nil {
+		return err
+	}
+
+	err = obj.UnmarshalVT(data)
 	if err != nil {
 		return err
 	}
@@ -428,7 +447,7 @@ func reportPanic() {
 			ReportCrashPayload: panicPayload,
 		},
 	}
-	err = objectToStdout(&pc)
+	err := objectToStdout(&pc)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Could report panic. Dumping panic to stderr. Panic: %s\n", panicPayload)
 	}
