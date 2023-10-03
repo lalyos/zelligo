@@ -22,7 +22,7 @@ Main target for compiling Go to WASI is [tinygo](https://tinygo.org/) and it is 
 In order to build plugin, use following command:
 
 ```bash
-tinygo build -o plugin.wasm -target=wasi
+tinygo build -o plugin.wasm -target=wasi -scheduler=none
 ```
 
 It will produce plugin `plugin.wasm` in current directory, using Go sources from current directory.
