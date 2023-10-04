@@ -433,7 +433,6 @@ func GoToPreviousTab() error {
 func reportPanic() {
 	r := recover()
 	if r == nil {
-		fmt.Fprintf(os.Stderr, "No panic to report\n")
 		return
 	}
 
