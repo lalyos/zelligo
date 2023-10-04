@@ -431,8 +431,8 @@ func GoToPreviousTab() error {
 }
 
 func reportPanic(errToReport error) {
-	stack := debug.Stack()
-	stacktrace := fmt.Sprintf("%w\n\n%s", errToReport, stack)
+	stack := string(debug.Stack())
+	stacktrace := fmt.Sprintf("%s\n\n%s", errToReport, stack)
 	panicPayload := strings.ReplaceAll(stacktrace, "\n", "\r\n")
 
 	pc := PluginCommand{
