@@ -5,9 +5,9 @@ import (
 )
 
 type ZellijPlugin interface {
-	Load(configuration map[string]string)
-	Update(event Event) bool
-	Render(rows uint32, cols uint32)
+	Load(configuration map[string]string) error
+	Update(event Event) (bool, error)
+	Render(rows uint32, cols uint32) error
 }
 
 var (
@@ -25,12 +25,11 @@ func pluginVersion() {
 
 //export load
 func load() {
-	defer reportPanic()
-
 	pluginConfiguration := PluginConfiguration{}
 	err := objectFromStdin(&pluginConfiguration)
 	if err != nil {
-		panic(err)
+		reportPanic(err)
+		return
 	}
 
 	configuration := make(map[string]string)
@@ -43,25 +42,34 @@ func load() {
 		}
 	}
 
-	STATE.Load(configuration)
+	err = STATE.Load(configuration)
+	if err != nil {
+		reportPanic(err)
+		return
+	}
 }
 
 //export update
 func update() bool {
-	defer reportPanic()
-
 	event := Event{}
 	err := objectFromStdin(&event)
 	if err != nil {
-		panic(err)
+		reportPanic(err)
+		return false
 	}
 
-	ret := STATE.Update(event)
+	ret, err := STATE.Update(event)
+	if err != nil {
+		reportPanic(err)
+		return false
+	}
 	return ret
 }
 
 //export render
 func render(x, y uint32) {
-	defer reportPanic()
-	STATE.Render(x, y)
+	err := STATE.Render(x, y)
+	if err != nil {
+		reportPanic(err)
+	}
 }

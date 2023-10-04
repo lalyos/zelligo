@@ -13,7 +13,9 @@ For more detailed documentation, refer to [official docs](https://zellij.dev/doc
 
 ## Error handling
 
-As is advised by Go, [you should handle errors](https://go.dev/doc/tutorial/handle-errors). When encoutered an error that you cannot handle, just panic :) - zelligo catches panics and reports them to Zellij.
+As is advised by Go, [you should handle errors](https://go.dev/doc/tutorial/handle-errors). When encoutered an error that you cannot handle, return it. WebAssembly currently has no good support for exception handling.
+
+Returned errors will be reported as panics to Zellij.
 
 ## Building
 
