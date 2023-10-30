@@ -1040,6 +1040,16 @@ func (m *LaunchOrFocusPluginPayload) MarshalToSizedBufferVT(dAtA []byte) (int, e
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
 	}
+	if m.ShouldOpenInPlace {
+		i--
+		if m.ShouldOpenInPlace {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x28
+	}
 	if m.MoveToFocusedTab {
 		i--
 		if m.MoveToFocusedTab {
@@ -2377,6 +2387,9 @@ func (m *LaunchOrFocusPluginPayload) SizeVT() (n int) {
 		n += 1 + l + sov(uint64(l))
 	}
 	if m.MoveToFocusedTab {
+		n += 2
+	}
+	if m.ShouldOpenInPlace {
 		n += 2
 	}
 	n += len(m.unknownFields)
@@ -4747,6 +4760,26 @@ func (m *LaunchOrFocusPluginPayload) UnmarshalVT(dAtA []byte) error {
 				}
 			}
 			m.MoveToFocusedTab = bool(v != 0)
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ShouldOpenInPlace", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.ShouldOpenInPlace = bool(v != 0)
 		default:
 			iNdEx = preIndex
 			skippy, err := skip(dAtA[iNdEx:])

@@ -208,6 +208,23 @@ func OpenFileFloating(file *File) error {
 	return nil
 }
 
+func OpenFileInPlace(file *File) error {
+	pc := PluginCommand{
+		Name: CommandName_OpenFileInPlace,
+		Payload: &PluginCommand_OpenFileInPlacePayload{
+			OpenFileInPlacePayload: &OpenFilePayload{
+				FileToOpen: file,
+			},
+		},
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
+}
+
 func OpenTerminal(filepath string) error {
 	pc := PluginCommand{
 		Name: CommandName_OpenTerminal,
@@ -246,6 +263,25 @@ func OpenTerminalFloating(filepath string) error {
 	return nil
 }
 
+func OpenTerminalInPlace(filepath string) error {
+	pc := PluginCommand{
+		Name: CommandName_OpenTerminalInPlace,
+		Payload: &PluginCommand_OpenTerminalInPlacePayload{
+			OpenTerminalInPlacePayload: &OpenFilePayload{
+				FileToOpen: &File{
+					Path: filepath,
+				},
+			},
+		},
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
+}
+
 func OpenCommandPane(command *Command) error {
 	pc := PluginCommand{
 		Name: CommandName_OpenCommandPane,
@@ -268,6 +304,23 @@ func OpenCommandPaneFloating(command *Command) error {
 		Name: CommandName_OpenCommandPaneFloating,
 		Payload: &PluginCommand_OpenCommandPaneFloatingPayload{
 			OpenCommandPaneFloatingPayload: &OpenCommandPanePayload{
+				CommandToRun: command,
+			},
+		},
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
+}
+
+func OpenCommandPaneInPlace(command *Command) error {
+	pc := PluginCommand{
+		Name: CommandName_OpenCommandInPlace,
+		Payload: &PluginCommand_OpenCommandPaneInPlacePayload{
+			OpenCommandPaneInPlacePayload: &OpenCommandPanePayload{
 				CommandToRun: command,
 			},
 		},
