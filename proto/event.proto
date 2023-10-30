@@ -4,6 +4,7 @@ import "input_mode.proto";
 import "key.proto";
 import "style.proto";
 import "action.proto";
+import "shared.proto";
 
 package api.event;
 
@@ -40,6 +41,7 @@ enum EventType {
     FileSystemDelete = 14;
     PermissionRequestResult = 15;
     SessionUpdate = 16;
+    RunCommandResult = 17;
 }
 
 message EventNameList {
@@ -61,11 +63,19 @@ message Event {
     FileListPayload file_list_payload = 11;
     PermissionRequestResultPayload permission_request_result_payload = 12;
     SessionUpdatePayload session_update_payload = 13;
+    RunCommandResultPayload run_command_result_payload = 14;
   }
 }
 
 message SessionUpdatePayload {
   repeated SessionManifest session_manifests = 1;
+}
+
+message RunCommandResultPayload {
+  optional int32 exit_code = 1;
+  bytes stdout = 2;
+  bytes stderr = 3;
+  repeated shared.ContextItem context = 4;
 }
 
 message PermissionRequestResultPayload {

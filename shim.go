@@ -384,6 +384,53 @@ func ExecCmd(cmd []string) error {
 	return nil
 }
 
+type RunCommandOptions struct {
+	WorkDir string
+	EnvVars map[string]string
+	Context map[string]string
+}
+
+func RunCommand(cmd []string, opt *RunCommandOptions) error {
+	//default option values
+	env := make([]*EnvVariable, 0)
+	ctx := make([]*ContextItem, 0)
+	cwd := "."
+
+	if opt != nil && opt.Context != nil {
+		for k, v := range opt.Context {
+			ctx = append(ctx, &ContextItem{Name: k, Value: v})
+		}
+	}
+
+	if opt != nil && opt.EnvVars != nil {
+		for k, v := range opt.EnvVars {
+			env = append(env, &EnvVariable{Name: k, Value: v})
+		}
+	}
+
+	if opt != nil && opt.WorkDir != "" {
+		cwd = opt.WorkDir
+	}
+
+	pc := PluginCommand{
+		Name: CommandName_RunCommand,
+		Payload: &PluginCommand_RunCommandPayload{
+			RunCommandPayload: &RunCommandPayload{
+				CommandLine:  cmd,
+				EnvVariables: env,
+				Cwd:          cwd,
+				Context:      ctx,
+			},
+		},
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
+}
+
 func HideSelf() error {
 	pc := PluginCommand{
 		Name:    CommandName_HideSelf,

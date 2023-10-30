@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package api.shared;
+
+
+message ContextItem {
+  string name = 1;
+  string value = 2;
+}
+
+
