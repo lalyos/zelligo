@@ -431,6 +431,60 @@ func RunCommand(cmd []string, opt *RunCommandOptions) error {
 	return nil
 }
 
+type WebRequestOptions struct {
+	Verb    string
+	Headers map[string]string
+	Body    []byte
+	Context map[string]string
+}
+
+func WebRequest(url string, opt *WebRequestOptions) error {
+	//default option values
+	verb := HttpVerb_Get
+	headers := make([]*Header, 0)
+	body := []byte{}
+	ctx := make([]*ContextItem, 0)
+
+	if opt != nil && opt.Context != nil {
+		for k, v := range opt.Context {
+			ctx = append(ctx, &ContextItem{Name: k, Value: v})
+		}
+	}
+
+	if opt != nil && opt.Headers != nil {
+		for k, v := range opt.Headers {
+			headers = append(headers, &Header{Name: k, Value: v})
+		}
+	}
+
+	if opt != nil && opt.Verb != "" {
+		v, found := HttpVerb_value[opt.Verb]
+		if !found {
+			return nil
+		}
+		verb = HttpVerb(v)
+	}
+
+	pc := PluginCommand{
+		Name: CommandName_WebRequest,
+		Payload: &PluginCommand_WebRequestPayload{
+			WebRequestPayload: &WebRequestPayload{
+				Url:     url,
+				Verb:    verb,
+				Headers: headers,
+				Body:    body,
+				Context: ctx,
+			},
+		},
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
+}
+
 func HideSelf() error {
 	pc := PluginCommand{
 		Name:    CommandName_HideSelf,
