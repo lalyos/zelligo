@@ -1290,6 +1290,22 @@ func DeleteAllDeadSessions() error {
 	return nil
 }
 
+func RenameSession(name string) error {
+	pc := PluginCommand{
+		Name: CommandName_RenameSession,
+		Payload: &PluginCommand_RenameSessionPayload{
+			RenameSessionPayload: name,
+		},
+	}
+
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
+}
+
 func PostMessageTo(message *Message) error {
 	pc := PluginCommand{
 		Name: CommandName_PostMessageTo,
