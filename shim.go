@@ -1260,6 +1260,36 @@ func SwitchSessionWithFocus(name string, tabPosition *uint32, paneId *uint32) er
 	return nil
 }
 
+func DeleteDeadSession(name string) error {
+	pc := PluginCommand{
+		Name: CommandName_DeleteDeadSession,
+		Payload: &PluginCommand_DeleteDeadSessionPayload{
+			DeleteDeadSessionPayload: name,
+		},
+	}
+
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
+}
+
+func DeleteAllDeadSessions() error {
+	pc := PluginCommand{
+		Name:    CommandName_DeleteDeadSession,
+		Payload: nil,
+	}
+
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
+}
+
 func PostMessageTo(message *Message) error {
 	pc := PluginCommand{
 		Name: CommandName_PostMessageTo,
