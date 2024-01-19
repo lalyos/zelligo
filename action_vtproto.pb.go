@@ -1030,6 +1030,16 @@ func (m *NewPluginPanePayload) MarshalToSizedBufferVT(dAtA []byte) (int, error) 
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
 	}
+	if m.SkipPluginCache {
+		i--
+		if m.SkipPluginCache {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x18
+	}
 	if m.PaneName != nil {
 		i -= len(*m.PaneName)
 		copy(dAtA[i:], *m.PaneName)
@@ -1076,6 +1086,16 @@ func (m *LaunchOrFocusPluginPayload) MarshalToSizedBufferVT(dAtA []byte) (int, e
 	if m.unknownFields != nil {
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
+	}
+	if m.SkipPluginCache {
+		i--
+		if m.SkipPluginCache {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x30
 	}
 	if m.ShouldOpenInPlace {
 		i--
@@ -2424,6 +2444,9 @@ func (m *NewPluginPanePayload) SizeVT() (n int) {
 		l = len(*m.PaneName)
 		n += 1 + l + sov(uint64(l))
 	}
+	if m.SkipPluginCache {
+		n += 2
+	}
 	n += len(m.unknownFields)
 	return n
 }
@@ -2449,6 +2472,9 @@ func (m *LaunchOrFocusPluginPayload) SizeVT() (n int) {
 		n += 2
 	}
 	if m.ShouldOpenInPlace {
+		n += 2
+	}
+	if m.SkipPluginCache {
 		n += 2
 	}
 	n += len(m.unknownFields)
@@ -4733,6 +4759,26 @@ func (m *NewPluginPanePayload) UnmarshalVT(dAtA []byte) error {
 			s := string(dAtA[iNdEx:postIndex])
 			m.PaneName = &s
 			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SkipPluginCache", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.SkipPluginCache = bool(v != 0)
 		default:
 			iNdEx = preIndex
 			skippy, err := skip(dAtA[iNdEx:])
@@ -4912,6 +4958,26 @@ func (m *LaunchOrFocusPluginPayload) UnmarshalVT(dAtA []byte) error {
 				}
 			}
 			m.ShouldOpenInPlace = bool(v != 0)
+		case 6:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SkipPluginCache", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.SkipPluginCache = bool(v != 0)
 		default:
 			iNdEx = preIndex
 			skippy, err := skip(dAtA[iNdEx:])
