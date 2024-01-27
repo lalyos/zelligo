@@ -1306,6 +1306,101 @@ func RenameSession(name string) error {
 	return nil
 }
 
+func UnblockCliPipeInput(pipe string) error {
+	pc := PluginCommand{
+		Name: CommandName_UnblockCliPipeInput,
+		Payload: &PluginCommand_UnblockCliPipeInputPayload{
+			UnblockCliPipeInputPayload: pipe,
+		},
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
+}
+
+func BlockCliPipeInput(pipe string) error {
+	pc := PluginCommand{
+		Name: CommandName_BlockCliPipeInput,
+		Payload: &PluginCommand_BlockCliPipeInputPayload{
+			BlockCliPipeInputPayload: pipe,
+		},
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
+}
+
+func CliPipeOutput(pipe string, output string) error {
+	pc := PluginCommand{
+		Name: CommandName_CliPipeOutput,
+		Payload: &PluginCommand_CliPipeOutputPayload{
+			CliPipeOutputPayload: &CliPipeOutputPayload{
+				PipeName: pipe,
+				Output:   output,
+			},
+		},
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
+}
+
+type PipeMessage struct {
+	Name    string
+	Payload *string
+	Args    map[string]string
+
+	PluginUrl     *string
+	PluginConfig  map[string]string
+	NewPluginArgs *NewPluginArgs
+}
+
+func PipeMessageToPlugin(message *PipeMessage) error {
+	messageArgs := make([]*ContextItem, 0)
+	pluginConfig := make([]*ContextItem, 0)
+
+	if message.Args != nil {
+		for k, v := range message.Args {
+			messageArgs = append(messageArgs, &ContextItem{Name: k, Value: v})
+		}
+	}
+
+	if message.PluginUrl != nil && message.PluginConfig != nil {
+		for k, v := range message.PluginConfig {
+			pluginConfig = append(pluginConfig, &ContextItem{Name: k, Value: v})
+		}
+	}
+
+	pc := PluginCommand{
+		Name: CommandName_MessageToPlugin,
+		Payload: &PluginCommand_MessageToPluginPayload{
+			MessageToPluginPayload: &MessageToPluginPayload{
+				PluginUrl:      message.PluginUrl,
+				PluginConfig:   pluginConfig,
+				MessageName:    message.Name,
+				MessagePayload: message.Payload,
+				MessageArgs:    messageArgs,
+				NewPluginArgs:  message.NewPluginArgs,
+			},
+		},
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
+}
+
 func PostMessageTo(message *Message) error {
 	pc := PluginCommand{
 		Name: CommandName_PostMessageTo,
