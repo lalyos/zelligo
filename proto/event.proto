@@ -88,11 +88,6 @@ message WebRequestResultPayload {
   repeated shared.ContextItem context = 4;
 }
 
-message ContextItem {
-  string name = 1;
-  string value = 2;
-}
-
 message Header {
   string name = 1;
   string value = 2;
