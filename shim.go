@@ -7,6 +7,8 @@ import (
 	"os"
 	"runtime/debug"
 	"strings"
+
+	kdl "github.com/sblinch/kdl-go"
 )
 
 type Serializable interface {
@@ -1360,7 +1362,7 @@ type PipeMessage struct {
 	Args    map[string]string
 
 	PluginUrl     *string
-	PluginConfig  map[string]string
+	PluginConfig  map[string]interface{}
 	NewPluginArgs *NewPluginArgs
 }
 
@@ -1376,7 +1378,11 @@ func PipeMessageToPlugin(message *PipeMessage) error {
 
 	if message.PluginUrl != nil && message.PluginConfig != nil {
 		for k, v := range message.PluginConfig {
-			pluginConfig = append(pluginConfig, &ContextItem{Name: k, Value: v})
+			kdlValue, err := kdl.Marshal(v)
+			if err != nil {
+				return err
+			}
+			pluginConfig = append(pluginConfig, &ContextItem{Name: k, Value: string(kdlValue)})
 		}
 	}
 
