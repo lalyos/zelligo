@@ -92,6 +92,7 @@ enum CommandName {
   BlockCliPipeInput = 77;
   CliPipeOutput = 78;
   MessageToPlugin = 79;
+  DisconnectOtherClients = 80;
 }
 
 message PluginCommand {

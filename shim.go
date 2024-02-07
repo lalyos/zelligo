@@ -1427,6 +1427,20 @@ func PipeMessageToPlugin(message *PipeMessage) error {
 	return nil
 }
 
+func DisconnectOtherClients() error {
+	pc := PluginCommand{
+		Name:    CommandName_DisconnectOtherClients,
+		Payload: nil,
+	}
+
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
+}
+
 func PostMessageTo(message *Message) error {
 	pc := PluginCommand{
 		Name: CommandName_PostMessageTo,
