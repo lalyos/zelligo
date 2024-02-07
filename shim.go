@@ -1242,6 +1242,26 @@ func SwitchSession(name *string) error {
 	return nil
 }
 
+func SwitchSessionWithLayout(name *string, layoutInfo LayoutInfo) error {
+	pc := PluginCommand{
+		Name: CommandName_SwitchSession,
+		Payload: &PluginCommand_SwitchSessionPayload{
+			SwitchSessionPayload: &SwitchSessionPayload{
+				Name:   name,
+				Layout: &layoutInfo,
+			},
+		},
+	}
+
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+
+	hostRunPluginCommand()
+	return nil
+}
+
 func SwitchSessionWithFocus(name string, tabPosition *uint32, paneId *uint32) error {
 	pc := PluginCommand{
 		Name: CommandName_SwitchSession,
