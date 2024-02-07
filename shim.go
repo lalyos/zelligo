@@ -1441,6 +1441,24 @@ func DisconnectOtherClients() error {
 	return nil
 }
 
+func KillSessions(sessionNames []string) error {
+	pc := PluginCommand{
+		Name: CommandName_KillSessions,
+		Payload: &PluginCommand_KillSessionsPayload{
+			KillSessionsPayload: &KillSessionsPayload{
+				SessionNames: sessionNames,
+			},
+		},
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
+
+}
+
 func PostMessageTo(message *Message) error {
 	pc := PluginCommand{
 		Name: CommandName_PostMessageTo,
