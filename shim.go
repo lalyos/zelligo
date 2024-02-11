@@ -193,12 +193,13 @@ func OpenFile(file *File) error {
 	return nil
 }
 
-func OpenFileFloating(file *File) error {
+func OpenFileFloating(file *File, coords *FloatingPaneCoordinates) error {
 	pc := PluginCommand{
 		Name: CommandName_OpenFileFloating,
 		Payload: &PluginCommand_OpenFileFloatingPayload{
 			OpenFileFloatingPayload: &OpenFilePayload{
-				FileToOpen: file,
+				FileToOpen:              file,
+				FloatingPaneCoordinates: coords,
 			},
 		},
 	}
@@ -246,7 +247,7 @@ func OpenTerminal(filepath string) error {
 	return nil
 }
 
-func OpenTerminalFloating(filepath string) error {
+func OpenTerminalFloating(filepath string, coords *FloatingPaneCoordinates) error {
 	pc := PluginCommand{
 		Name: CommandName_OpenTerminalFloating,
 		Payload: &PluginCommand_OpenTerminalFloatingPayload{
@@ -254,6 +255,7 @@ func OpenTerminalFloating(filepath string) error {
 				FileToOpen: &File{
 					Path: filepath,
 				},
+				FloatingPaneCoordinates: coords,
 			},
 		},
 	}
@@ -301,12 +303,13 @@ func OpenCommandPane(command *Command) error {
 	return nil
 }
 
-func OpenCommandPaneFloating(command *Command) error {
+func OpenCommandPaneFloating(command *Command, coords *FloatingPaneCoordinates) error {
 	pc := PluginCommand{
 		Name: CommandName_OpenCommandPaneFloating,
 		Payload: &PluginCommand_OpenCommandPaneFloatingPayload{
 			OpenCommandPaneFloatingPayload: &OpenCommandPanePayload{
-				CommandToRun: command,
+				CommandToRun:            command,
+				FloatingPaneCoordinates: coords,
 			},
 		},
 	}
