@@ -1245,13 +1245,14 @@ func SwitchSession(name *string) error {
 	return nil
 }
 
-func SwitchSessionWithLayout(name *string, layoutInfo LayoutInfo) error {
+func SwitchSessionWithLayout(name *string, layoutInfo LayoutInfo, cwd *string) error {
 	pc := PluginCommand{
 		Name: CommandName_SwitchSession,
 		Payload: &PluginCommand_SwitchSessionPayload{
 			SwitchSessionPayload: &SwitchSessionPayload{
 				Name:   name,
 				Layout: &layoutInfo,
+				Cwd:    cwd,
 			},
 		},
 	}
