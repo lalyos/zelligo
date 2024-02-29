@@ -1387,6 +1387,8 @@ type PipeMessage struct {
 	PluginUrl     *string
 	PluginConfig  map[string]interface{}
 	NewPluginArgs *NewPluginArgs
+
+	PluginId *uint32
 }
 
 func PipeMessageToPlugin(message *PipeMessage) error {
@@ -1413,12 +1415,13 @@ func PipeMessageToPlugin(message *PipeMessage) error {
 		Name: CommandName_MessageToPlugin,
 		Payload: &PluginCommand_MessageToPluginPayload{
 			MessageToPluginPayload: &MessageToPluginPayload{
-				PluginUrl:      message.PluginUrl,
-				PluginConfig:   pluginConfig,
-				MessageName:    message.Name,
-				MessagePayload: message.Payload,
-				MessageArgs:    messageArgs,
-				NewPluginArgs:  message.NewPluginArgs,
+				PluginUrl:           message.PluginUrl,
+				PluginConfig:        pluginConfig,
+				MessageName:         message.Name,
+				MessagePayload:      message.Payload,
+				MessageArgs:         messageArgs,
+				NewPluginArgs:       message.NewPluginArgs,
+				DestinationPluginId: message.PluginId,
 			},
 		},
 	}

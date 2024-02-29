@@ -1127,6 +1127,11 @@ func (m *MessageToPluginPayload) MarshalToSizedBufferVT(dAtA []byte) (int, error
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
 	}
+	if m.DestinationPluginId != nil {
+		i = encodeVarint(dAtA, i, uint64(*m.DestinationPluginId))
+		i--
+		dAtA[i] = 0x38
+	}
 	if m.NewPluginArgs != nil {
 		size, err := m.NewPluginArgs.MarshalToSizedBufferVT(dAtA[:i])
 		if err != nil {
@@ -2872,6 +2877,9 @@ func (m *MessageToPluginPayload) SizeVT() (n int) {
 	if m.NewPluginArgs != nil {
 		l = m.NewPluginArgs.SizeVT()
 		n += 1 + l + sov(uint64(l))
+	}
+	if m.DestinationPluginId != nil {
+		n += 1 + sov(uint64(*m.DestinationPluginId))
 	}
 	n += len(m.unknownFields)
 	return n
@@ -5603,6 +5611,26 @@ func (m *MessageToPluginPayload) UnmarshalVT(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 7:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DestinationPluginId", wireType)
+			}
+			var v uint32
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= uint32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.DestinationPluginId = &v
 		default:
 			iNdEx = preIndex
 			skippy, err := skip(dAtA[iNdEx:])
