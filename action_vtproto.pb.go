@@ -928,6 +928,20 @@ func (m *Action_MessagePayload) MarshalToSizedBufferVT(dAtA []byte) (int, error)
 	}
 	return len(dAtA) - i, nil
 }
+func (m *Action_MoveTabPayload) MarshalToVT(dAtA []byte) (int, error) {
+	size := m.SizeVT()
+	return m.MarshalToSizedBufferVT(dAtA[:size])
+}
+
+func (m *Action_MoveTabPayload) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	i = encodeVarint(dAtA, i, uint64(m.MoveTabPayload))
+	i--
+	dAtA[i] = 0x3
+	i--
+	dAtA[i] = 0x80
+	return len(dAtA) - i, nil
+}
 func (m *CliPipePayload) MarshalVT() (dAtA []byte, err error) {
 	if m == nil {
 		return nil, nil
@@ -2494,6 +2508,15 @@ func (m *Action_MessagePayload) SizeVT() (n int) {
 		l = m.MessagePayload.SizeVT()
 		n += 2 + l + sov(uint64(l))
 	}
+	return n
+}
+func (m *Action_MoveTabPayload) SizeVT() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	n += 2 + sov(uint64(m.MoveTabPayload))
 	return n
 }
 func (m *CliPipePayload) SizeVT() (n int) {
@@ -4617,6 +4640,26 @@ func (m *Action) UnmarshalVT(dAtA []byte) error {
 				m.OptionalPayload = &Action_MessagePayload{MessagePayload: v}
 			}
 			iNdEx = postIndex
+		case 48:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MoveTabPayload", wireType)
+			}
+			var v MoveTabDirection
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= MoveTabDirection(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.OptionalPayload = &Action_MoveTabPayload{MoveTabPayload: v}
 		default:
 			iNdEx = preIndex
 			skippy, err := skip(dAtA[iNdEx:])
