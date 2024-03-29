@@ -1492,6 +1492,18 @@ func WatchFilesystem() error {
 	return nil
 }
 
+func DumpSessionLayout() error {
+	pc := PluginCommand{
+		Name: CommandName_DumpSessionLayout,
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
+}
+
 func PostMessageTo(message *Message) error {
 	pc := PluginCommand{
 		Name: CommandName_PostMessageTo,
