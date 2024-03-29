@@ -518,6 +518,18 @@ func ShowSelf(shouldFloatIfHidden bool) error {
 	return nil
 }
 
+func CloseSelf() error {
+	pc := PluginCommand{
+		Name: CommandName_CloseSelf,
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
+}
+
 func SwitchToInputMode(inputMode InputMode) error {
 	pc := PluginCommand{
 		Name: CommandName_SwitchToMode,
