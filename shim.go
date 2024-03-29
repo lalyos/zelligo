@@ -1463,7 +1463,33 @@ func KillSessions(sessionNames []string) error {
 	}
 	hostRunPluginCommand()
 	return nil
+}
 
+func ScanHostFolder(folder string) error {
+	pc := PluginCommand{
+		Name: CommandName_ScanHostFolder,
+		Payload: &PluginCommand_ScanHostFolderPayload{
+			ScanHostFolderPayload: string,
+		},
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
+}
+
+func WatchFilesystem() error {
+	pc := PluginCommand{
+		Name: CommandName_WatchFilesystem,
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
 }
 
 func PostMessageTo(message *Message) error {

@@ -1008,6 +1008,22 @@ func (m *PluginCommand_KillSessionsPayload) MarshalToSizedBufferVT(dAtA []byte) 
 	}
 	return len(dAtA) - i, nil
 }
+func (m *PluginCommand_ScanHostFolderPayload) MarshalToVT(dAtA []byte) (int, error) {
+	size := m.SizeVT()
+	return m.MarshalToSizedBufferVT(dAtA[:size])
+}
+
+func (m *PluginCommand_ScanHostFolderPayload) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	i -= len(m.ScanHostFolderPayload)
+	copy(dAtA[i:], m.ScanHostFolderPayload)
+	i = encodeVarint(dAtA, i, uint64(len(m.ScanHostFolderPayload)))
+	i--
+	dAtA[i] = 0x3
+	i--
+	dAtA[i] = 0xea
+	return len(dAtA) - i, nil
+}
 func (m *KillSessionsPayload) MarshalVT() (dAtA []byte, err error) {
 	if m == nil {
 		return nil, nil
@@ -2815,6 +2831,16 @@ func (m *PluginCommand_KillSessionsPayload) SizeVT() (n int) {
 		l = m.KillSessionsPayload.SizeVT()
 		n += 2 + l + sov(uint64(l))
 	}
+	return n
+}
+func (m *PluginCommand_ScanHostFolderPayload) SizeVT() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.ScanHostFolderPayload)
+	n += 2 + l + sov(uint64(l))
 	return n
 }
 func (m *KillSessionsPayload) SizeVT() (n int) {
@@ -5170,6 +5196,38 @@ func (m *PluginCommand) UnmarshalVT(dAtA []byte) error {
 				}
 				m.Payload = &PluginCommand_KillSessionsPayload{KillSessionsPayload: v}
 			}
+			iNdEx = postIndex
+		case 61:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ScanHostFolderPayload", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLength
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLength
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Payload = &PluginCommand_ScanHostFolderPayload{ScanHostFolderPayload: string(dAtA[iNdEx:postIndex])}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

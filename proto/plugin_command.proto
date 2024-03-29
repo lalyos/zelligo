@@ -94,6 +94,8 @@ enum CommandName {
   MessageToPlugin = 79;
   DisconnectOtherClients = 80;
   KillSessions = 81;
+  ScanHostFolder = 82;
+  WatchFilesystem = 83;
 }
 
 message PluginCommand {
@@ -149,6 +151,7 @@ message PluginCommand {
     CliPipeOutputPayload cli_pipe_output_payload = 49;
     MessageToPluginPayload message_to_plugin_payload = 50;
     KillSessionsPayload kill_sessions_payload = 60;
+    string scan_host_folder_payload = 61;
   }
 }
 
