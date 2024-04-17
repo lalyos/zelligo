@@ -1481,7 +1481,7 @@ func ScanHostFolder(folder string) error {
 	pc := PluginCommand{
 		Name: CommandName_ScanHostFolder,
 		Payload: &PluginCommand_ScanHostFolderPayload{
-			ScanHostFolderPayload: string,
+			ScanHostFolderPayload: folder,
 		},
 	}
 	err := objectToStdout(&pc)
