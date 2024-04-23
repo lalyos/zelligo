@@ -1392,7 +1392,7 @@ func CliPipeOutput(pipe string, output string) error {
 	return nil
 }
 
-type PipeMessage struct {
+type MessageToPlugin struct {
 	Name    string
 	Payload *string
 	Args    map[string]string
@@ -1404,7 +1404,7 @@ type PipeMessage struct {
 	PluginId *uint32
 }
 
-func PipeMessageToPlugin(message *PipeMessage) error {
+func PipeMessageToPlugin(message *MessageToPlugin) error {
 	messageArgs := make([]*ContextItem, 0)
 	pluginConfig := make([]*ContextItem, 0)
 
