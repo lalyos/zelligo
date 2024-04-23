@@ -1239,12 +1239,12 @@ func RenameTab(tabPosition uint32, newName string) error {
 	return nil
 }
 
-func SwitchSession(name *string) error {
+func SwitchSession(name string) error {
 	pc := PluginCommand{
 		Name: CommandName_SwitchSession,
 		Payload: &PluginCommand_SwitchSessionPayload{
 			SwitchSessionPayload: &SwitchSessionPayload{
-				Name: name,
+				Name: &name,
 			},
 		},
 	}
@@ -1257,12 +1257,12 @@ func SwitchSession(name *string) error {
 	return nil
 }
 
-func SwitchSessionWithLayout(name *string, layoutInfo LayoutInfo, cwd *string) error {
+func SwitchSessionWithLayout(name string, layoutInfo LayoutInfo, cwd *string) error {
 	pc := PluginCommand{
 		Name: CommandName_SwitchSession,
 		Payload: &PluginCommand_SwitchSessionPayload{
 			SwitchSessionPayload: &SwitchSessionPayload{
-				Name:   name,
+				Name:   &name,
 				Layout: &layoutInfo,
 				Cwd:    cwd,
 			},
@@ -1278,13 +1278,13 @@ func SwitchSessionWithLayout(name *string, layoutInfo LayoutInfo, cwd *string) e
 	return nil
 }
 
-func SwitchSessionWithFocus(name string, tabPosition *uint32, paneId *uint32) error {
+func SwitchSessionWithFocus(name string, tabPosition uint32, paneId *uint32) error {
 	pc := PluginCommand{
 		Name: CommandName_SwitchSession,
 		Payload: &PluginCommand_SwitchSessionPayload{
 			SwitchSessionPayload: &SwitchSessionPayload{
 				Name:        &name,
-				TabPosition: tabPosition,
+				TabPosition: &tabPosition,
 				PaneId:      paneId,
 			},
 		},
