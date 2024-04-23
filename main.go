@@ -10,6 +10,7 @@ import (
 type ZellijPlugin interface {
 	Load(configuration []byte) error
 	Update(event Event) (bool, error)
+	Pipe(message PipeMessage) (bool, error)
 	Render(rows uint32, cols uint32) error
 }
 
@@ -77,6 +78,23 @@ func update() bool {
 	}
 
 	ret, err := STATE.Update(event)
+	if err != nil {
+		reportPanic(err)
+		return false
+	}
+	return ret
+}
+
+//export pipe
+func pipe() bool {
+	message := PipeMessage{}
+	err := objectFromStdin(&message)
+	if err != nil {
+		reportPanic(err)
+		return false
+	}
+
+	ret, err := STATE.Pipe(message)
 	if err != nil {
 		reportPanic(err)
 		return false
