@@ -1,14 +1,11 @@
 package zelligo
 
 import (
-	"bytes"
 	"fmt"
-
-	kdl "github.com/sblinch/kdl-go"
 )
 
 type ZellijPlugin interface {
-	Load(configuration []byte) error
+	Load(configuration map[string]string) error
 	Update(event Event) (bool, error)
 	Pipe(message PipeMessage) (bool, error)
 	Render(rows uint32, cols uint32) error
@@ -36,32 +33,17 @@ func load() {
 		return
 	}
 
+	configuration := make(map[string]string)
 	nameAndValues := pluginConfiguration.GetNameAndValue()
-	if nameAndValues == nil {
-		err = STATE.Load([]byte{})
-		if err != nil {
-			reportPanic(err)
-		}
-		return
-	}
-
-	configMap := make(map[string]string)
-	for _, g := range nameAndValues {
-		if g != nil {
-			configMap[g.Name] = g.Value
+	if nameAndValues != nil {
+		for _, g := range nameAndValues {
+			if g != nil {
+				configuration[g.Name] = g.Value
+			}
 		}
 	}
 
-	configBuffer := bytes.Buffer{}
-
-	enc := kdl.NewEncoder(&configBuffer)
-	enc.Encode(configMap)
-	if err != nil {
-		reportPanic(fmt.Errorf("cannot encode configuration into KDL: %v", err))
-		return
-	}
-
-	err = STATE.Load(configBuffer.Bytes())
+	err = STATE.Load(configuration)
 	if err != nil {
 		reportPanic(err)
 		return

@@ -37,12 +37,6 @@ env GOOS=wasip1 GOARCH=wasm go build -o plugin.wasm main.go
 
 However, it is young and experimental so expect bugs.
 
-## Configuration
-
-zellij supports configuring plugins via KDL - [official docs](https://zellij.dev/documentation/plugin-api-configuration).
-In zelligo, configuration is passed as KDL bytes to plugin's `Load` method.
-It can be parsed as plugin developer wants, using preferred KDL parsing library.
-
 ## Version support
 
 zelligo supports Zellij version 0.38.0 and later.
