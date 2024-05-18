@@ -562,6 +562,21 @@ func NewTabsWithLayout(layout string) error {
 	return nil
 }
 
+func NewTabsWithLayoutInfo(layoutInfo LayoutInfo) error {
+	pc := PluginCommand{
+		Name: CommandName_NewTabsWithLayoutInfo,
+		Payload: &PluginCommand_NewTabsWithLayoutInfoPayload{
+			NewTabsWithLayoutInfoPayload: &layoutInfo,
+		},
+	}
+	err := objectToStdout(&pc)
+	if err != nil {
+		return err
+	}
+	hostRunPluginCommand()
+	return nil
+}
+
 func NewTab() error {
 	pc := PluginCommand{
 		Name:    CommandName_NewTab,
