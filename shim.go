@@ -563,17 +563,18 @@ func NewTabsWithLayout(layout string) error {
 }
 
 func NewTabsWithLayoutInfo(layoutInfo LayoutInfo) error {
-	pc := PluginCommand{
-		Name: CommandName_NewTabsWithLayoutInfo,
-		Payload: &PluginCommand_NewTabsWithLayoutInfoPayload{
-			NewTabsWithLayoutInfoPayload: &layoutInfo,
-		},
-	}
-	err := objectToStdout(&pc)
-	if err != nil {
-		return err
-	}
-	hostRunPluginCommand()
+	// pc := PluginCommand{
+	// 	Name: CommandName_NewTabsWithLayoutInfo,
+	// 	Payload: &PluginCommand_NewTabsWithLayoutInfoPayload{
+	// 		NewTabsWithLayoutInfoPayload: &layoutInfo,
+	// 	},
+	// }
+	// err := objectToStdout(&pc)
+	// if err != nil {
+	// 	return err
+	// }
+	// hostRunPluginCommand()
+	fmt.Fprintf(os.Stderr, "NOT implemented: NewTabsWithLayoutInfo\n")
 	return nil
 }
 
